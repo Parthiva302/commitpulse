@@ -72,4 +72,96 @@ describe('generateSVG', () => {
     expect(svg).toContain('00ffaa'); // default accent
     expect(svg).toContain('ffffff'); // default text
   });
+
+  // ── Auto-theme (prefers-color-scheme) tests ──────────────────────────────
+  // These verify that theme=auto produces an SVG that switches between light
+  // and dark color palettes using CSS custom properties and a media query,
+  // without any JavaScript.
+
+  describe('autoTheme', () => {
+    const autoParams: BadgeParams = {
+      user: 'avi',
+      bg: 'ffffff',
+      text: '24292f',
+      accent: '0969da',
+      speed: '8s',
+      scale: 'linear',
+      autoTheme: true,
+    };
+
+    it('injects CSS custom properties for light-mode defaults', () => {
+      const svg = generateSVG(mockStats, autoParams, mockCalendar);
+
+      // Light-mode CSS variables (the "default" palette)
+      expect(svg).toContain('--cp-bg: #ffffff');
+      expect(svg).toContain('--cp-text: #24292f');
+      expect(svg).toContain('--cp-accent: #0969da');
+    });
+
+    it('injects @media (prefers-color-scheme: dark) with dark palette', () => {
+      const svg = generateSVG(mockStats, autoParams, mockCalendar);
+
+      // Media query block must be present
+      expect(svg).toContain('prefers-color-scheme: dark');
+
+      // Dark-mode CSS variables inside the media query
+      expect(svg).toContain('--cp-bg: #0d1117');
+      expect(svg).toContain('--cp-text: #c9d1d9');
+      expect(svg).toContain('--cp-accent: #58a6ff');
+    });
+
+    it('uses CSS utility classes instead of hardcoded fill attributes', () => {
+      const svg = generateSVG(mockStats, autoParams, mockCalendar);
+
+      // Background rect should use a class, not a hardcoded fill
+      expect(svg).toContain('class="cp-bg-fill"');
+
+      // Towers should use accent/text CSS classes
+      expect(svg).toContain('class="cp-accent-fill"');
+      expect(svg).toContain('class="cp-text-fill"');
+
+      // The radar scan line should also use the accent class
+      expect(svg).toMatch(/rect[^>]*class="cp-accent-fill"/);
+    });
+
+    it('references var() in CSS class definitions', () => {
+      const svg = generateSVG(mockStats, autoParams, mockCalendar);
+
+      expect(svg).toContain('fill: var(--cp-bg)');
+      expect(svg).toContain('fill: var(--cp-text)');
+      expect(svg).toContain('fill: var(--cp-accent)');
+    });
+
+    it('does NOT inject a media query for non-auto themes', () => {
+      const staticParams: BadgeParams = {
+        user: 'avi',
+        bg: '0d1117',
+        text: 'c9d1d9',
+        accent: '58a6ff',
+        speed: '8s',
+        scale: 'linear',
+        autoTheme: false,
+      };
+
+      const svg = generateSVG(mockStats, staticParams, mockCalendar);
+
+      // Static themes must NOT contain the auto-theme machinery
+      expect(svg).not.toContain('prefers-color-scheme: dark');
+      expect(svg).not.toContain('--cp-bg');
+      expect(svg).not.toContain('class="cp-bg-fill"');
+    });
+
+    it('generates heat particles with CSS class instead of inline fill', () => {
+      const svg = generateSVG(mockStats, autoParams, mockCalendar);
+
+      // Auto particles use the cp-accent-fill class instead of fill="<hex>"
+      expect(svg).toContain('class="cp-accent-fill"');
+      expect(svg).toContain('class="heat-particles"');
+    });
+
+    it('still respects prefers-reduced-motion for particles', () => {
+      const svg = generateSVG(mockStats, autoParams, mockCalendar);
+      expect(svg).toContain('prefers-reduced-motion');
+    });
+  });
 });

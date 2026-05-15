@@ -90,17 +90,24 @@ URL Parameter > Theme Default > System Fallback
 
 ### Theme Presets
 
-| Theme              | Preview         | `bg`     | `accent` | `text`   |
-| ------------------ | --------------- | -------- | -------- | -------- |
-| `dark` _(default)_ | GitHub dark     | `0d1117` | `58a6ff` | `c9d1d9` |
-| `neon`             | Cyberpunk       | `000000` | `ff00ff` | `00ffcc` |
-| `dracula`          | Dracula Pro     | `282a36` | `bd93f9` | `f8f8f2` |
-| `github`           | GitHub green    | `0d1117` | `238636` | `ffffff` |
-| `light`            | Clean & minimal | `ffffff` | `0969da` | `24292f` |
+| Theme              | Preview             | `bg`     | `accent` | `text`   |
+| ------------------ | ------------------- | -------- | -------- | -------- |
+| `auto`             | System light / dark | _adapts_ | _adapts_ | _adapts_ |
+| `dark` _(default)_ | GitHub dark         | `0d1117` | `58a6ff` | `c9d1d9` |
+| `neon`             | Cyberpunk           | `000000` | `ff00ff` | `00ffcc` |
+| `dracula`          | Dracula Pro         | `282a36` | `bd93f9` | `f8f8f2` |
+| `github`           | GitHub green        | `0d1117` | `238636` | `ffffff` |
+| `light`            | Clean & minimal     | `ffffff` | `0969da` | `24292f` |
+
+> **`auto` uses CSS `@media (prefers-color-scheme)`** inside the SVG so the badge switches between the `light` and `dark` palettes based on the viewer's OS setting — no JavaScript required. This is ideal for GitHub profile READMEs where visitors may use either mode.
 
 ### Examples
 
 ```md
+<!-- Auto theme — adapts to the viewer's light/dark system preference -->
+
+![](https://commitpulse.vercel.app/api/streak?user=jhasourav07&theme=auto)
+
 <!-- The Dracula aesthetic -->
 
 ![](https://commitpulse.vercel.app/api/streak?user=jhasourav07&theme=dracula)
