@@ -3,6 +3,7 @@ const { hasWriteAccess } = require('./permissions');
 const { handleAssign } = require('./assign-handler');
 const { handleUnassign } = require('./unassign-handler');
 const { handleAddLabel } = require('./addlabel-handler');
+const { handleClaim } = require('./claim-handler');
 
 module.exports = async ({ github, context, core }) => {
   const commentBody = context.payload.comment?.body;
@@ -43,6 +44,9 @@ module.exports = async ({ github, context, core }) => {
         break;
       case 'addlabel':
         await handleAddLabel({ github, context, labelArgs: parsed.labels });
+        break;
+      case 'claim':
+        await handleClaim({ github, context });
         break;
     }
   } catch (error) {

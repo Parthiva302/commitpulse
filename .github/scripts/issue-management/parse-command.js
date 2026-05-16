@@ -12,6 +12,9 @@ function parseCommand(commentBody) {
     const unassignMatch = line.match(/^\/unassign\s+@([^\s]+)\s*$/i);
     if (unassignMatch) return { command: 'unassign', username: unassignMatch[1] };
 
+    const claimMatch = line.match(/^\/claim\s*$/i);
+    if (claimMatch) return { command: 'claim' };
+
     const addlabelMatch = line.match(/^\/addlabel\s+(.+)$/i);
     if (addlabelMatch) {
       const labels = parseLabels(addlabelMatch[1]);

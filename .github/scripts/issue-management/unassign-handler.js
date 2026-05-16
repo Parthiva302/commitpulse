@@ -2,6 +2,17 @@ async function handleUnassign({ github, context, username, hasWriteAccess }) {
   const { owner, repo } = context.repo;
   const issueNumber = context.payload.issue.number;
   const commenter = context.payload.comment.user.login;
+  const issueState = context.payload.issue.state;
+
+  if (issueState === 'closed') {
+    await github.rest.issues.createComment({
+      owner,
+      repo,
+      issue_number: issueNumber,
+      body: `❌ Commands cannot be used on closed issues.`,
+    });
+    return;
+  }
 
   if (!hasWriteAccess) {
     await github.rest.issues.createComment({

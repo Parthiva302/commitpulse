@@ -35,7 +35,7 @@ async function handleAssign({ github, context, username, hasWriteAccess }) {
       owner,
       repo,
       issue_number: issueNumber,
-      body: `❌ Cannot assign \`@${username}\` — this issue is already **closed**.`,
+      body: `❌ Commands cannot be used on closed issues.`,
     });
     return;
   }

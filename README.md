@@ -234,6 +234,20 @@ Set the `GITHUB_PAT` environment variable in your Vercel project settings, and y
 
 ---
 
+## 🤖 Automated Contributor Workflow
+
+CommitPulse features a fully custom, GitHub Actions-powered **Issue Management System** designed for large open-source events like GSSoC. 
+
+We built an anti-hoarding, self-service automation layer right into the repository:
+- **Self-Claiming:** Contributors can grab issues instantly by commenting `/claim`.
+- **Fair Play:** A strict one-active-issue-per-contributor rule prevents issue hoarding.
+- **Stale Expiry:** A scheduled chron job automatically unassigns inactive contributors after 3 days.
+- **Self-Service Labels:** Anyone can tag issues using `/addlabel <tag>`.
+
+This ensures maintainers aren't bottlenecks and the community moves incredibly fast.
+
+---
+
 ## 🤝 Contributing
 
 CommitPulse is an open project built for the Web3 and open-source community. Whether you want to design a new theme, refine the isometric geometry, or improve timezone edge cases — you are welcome here.
