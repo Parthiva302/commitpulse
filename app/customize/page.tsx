@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { ControlsPanel } from './components/ControlsPanel';
 import { ExportPanel } from './components/ExportPanel';
 import InteractiveViewer from '@/components/InteractiveViewer';
+import DOMPurify from 'dompurify';
 import type {
   ExportFormat,
   Font,
@@ -142,11 +143,18 @@ export default function CustomizePage(): ReactElement {
       })
       .then((text) => {
         if (!text) return;
-        // Basic SVG sanitization to prevent XSS (strip scripts and inline event handlers)
-        const sanitized = text
-          .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, '')
-          .replace(/on\w+\s*=\s*("[^"]*"|'[^']*')/gi, '');
-        setSvgContent(sanitized);
+        // Sanitize SVG using DOMPurify with the SVG profile.
+        // - Forbid risky tags like foreignObject and embedded content
+        // - Forbid xlink:href to avoid external references
+        // - Use a conservative URI whitelist to prevent javascript: URIs
+        const sanitized = DOMPurify.sanitize(text, {
+          USE_PROFILES: { svg: true },
+          FORBID_TAGS: ['foreignObject', 'iframe', 'object', 'embed', 'script'],
+          FORBID_ATTR: ['xlink:href'],
+          ALLOWED_URI_REGEXP: /^(?:(?:https?|mailto|data):|#)/i,
+        });
+
+        setSvgContent(sanitized as string);
         setSvgState('loaded');
         setErrorMessage(null);
       })
