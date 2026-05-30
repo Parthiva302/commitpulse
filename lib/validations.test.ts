@@ -756,3 +756,24 @@ describe('streakParamsSchema — Date Range Boundary Robustness (Variation 1)', 
     }
   });
 });
+
+/* ==========================================================================
+ * TZ PARAMETER — IANA TIMEZONE VALIDATION (VARIATION 4)
+ * ========================================================================== */
+
+describe('streakParamsSchema — tz IANA timezone validation (Variation 4)', () => {
+  it('rejects a fictitious planetary timezone that is not a valid IANA zone', () => {
+    // Mars/Cyonia looks structurally plausible (Region/City format) but does not
+    // exist in the IANA tz database, so Intl.DateTimeFormat must throw and the
+    // schema must surface a field-level validation error.
+    const result = streakParamsSchema.safeParse({
+      user: 'octocat',
+      tz: 'Mars/Cyonia',
+    });
+
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues[0]?.message).toContain('Invalid timezone');
+    }
+  });
+});

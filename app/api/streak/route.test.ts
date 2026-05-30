@@ -826,6 +826,20 @@ describe('GET /api/streak', () => {
 
       expect(getSecondsUntilMidnightInTimezone).toHaveBeenCalledWith('Australia/Sydney');
     });
+
+    // =========================================================================
+    // ISSUE OBJECTIVE: Reject fictitious planetary timezone (Variation 4)
+    // =========================================================================
+    it('returns 400 when a fictitious planetary timezone Mars/Cyonia is supplied', async () => {
+      // Mars/Cyonia is structurally plausible (Region/City format) but does not
+      // exist in the IANA tz database — the schema must reject it before the
+      // request reaches the GitHub API.
+      const response = await GET(makeRequest({ user: 'octocat', tz: 'Mars/Cyonia' }));
+
+      expect(response.status).toBe(400);
+      const body = await response.json();
+      expect(body.details.fieldErrors.tz[0]).toContain('Invalid timezone');
+    });
   });
 
   describe('hide_background parameter', () => {
