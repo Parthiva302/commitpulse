@@ -892,6 +892,42 @@ describe('calculateWrappedStats', () => {
     // Assert the ratio is exactly 100%
     expect(result.weekendRatio).toBe(100);
   });
+
+  it('correctly calculates streak when utc midnight maps to different local dates', () => {
+    // Calendar: contributions on Jan 14 and Jan 15 (consecutive days)
+    const calendar = {
+      totalContributions: 2,
+      weeks: [
+        {
+          contributionDays: [
+            { contributionCount: 1, date: '2024-01-14' },
+            { contributionCount: 1, date: '2024-01-15' },
+          ],
+        },
+      ],
+    };
+
+    // UTC: 2024-01-15T04:59:00Z maps to:
+    // - 2024-01-15 in UTC (after midnight)
+    // - 2024-01-14T23:59:00 in UTC-5 (before midnight, same local day as yesterday)
+    // - 2024-01-15T09:59:00 in UTC+5 (well into the new day)
+    const nowUTC = new Date('2024-01-15T04:59:00Z');
+
+    // Streak in UTC: today=Jan15, yesterday=Jan14, both have contributions → streak=2
+    const resultUTC = calculateStreak(calendar, 'UTC', nowUTC);
+    expect(resultUTC.currentStreak).toBe(2);
+    expect(resultUTC.todayDate).toBe('2024-01-15');
+
+    // Streak in UTC-5: today=Jan14, only Jan14 is in scope → streak=1
+    const resultUTCMinus5 = calculateStreak(calendar, 'Etc/GMT+5', nowUTC);
+    expect(resultUTCMinus5.currentStreak).toBe(1);
+    expect(resultUTCMinus5.todayDate).toBe('2024-01-14');
+
+    // Streak in UTC+5: today=Jan15, yesterday=Jan14, both have contributions → streak=2
+    const resultUTCPlus5 = calculateStreak(calendar, 'Etc/GMT-5', nowUTC);
+    expect(resultUTCPlus5.currentStreak).toBe(2);
+    expect(resultUTCPlus5.todayDate).toBe('2024-01-15');
+  });
 });
 
 describe('findTodayIndex', () => {
