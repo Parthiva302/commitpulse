@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @next/next/no-img-element, jsx-a11y/alt-text */
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
@@ -31,17 +32,57 @@ vi.mock('next/link', () => ({
 // Mock framer-motion
 vi.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, className, ...props }: any) => (
+    div: ({
+      children,
+      className,
+      whileHover,
+      whileTap,
+      whileInView,
+      initial,
+      animate,
+      exit,
+      transition,
+      viewport,
+      layoutId,
+      ...props
+    }: any) => (
       <div className={className} data-testid="motion-div" {...props}>
         {children}
       </div>
     ),
-    p: ({ children, className, ...props }: any) => (
+    p: ({
+      children,
+      className,
+      whileHover,
+      whileTap,
+      whileInView,
+      initial,
+      animate,
+      exit,
+      transition,
+      viewport,
+      layoutId,
+      ...props
+    }: any) => (
       <p className={className} data-testid="motion-p" {...props}>
         {children}
       </p>
     ),
-    a: ({ children, className, href, ...props }: any) => (
+    a: ({
+      children,
+      className,
+      href,
+      whileHover,
+      whileTap,
+      whileInView,
+      initial,
+      animate,
+      exit,
+      transition,
+      viewport,
+      layoutId,
+      ...props
+    }: any) => (
       <a href={href} className={className} data-testid="motion-a" {...props}>
         {children}
       </a>
