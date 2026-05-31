@@ -1,0 +1,184 @@
+{
+  "navbar": {
+    "home": "Retour à l'accueil",
+    "repo": "Dépôt GitHub",
+    "contributors": "Contributeurs",
+    "theme_toggle": "Changer de thème",
+    "menu_open": "Ouvrir le menu",
+    "menu_close": "Fermer le menu"
+  },
+  "footer": {
+    "tagline": "Conçu pour la communauté des développeurs d'élite.",
+    "contributors": "Contributeurs",
+    "documentation": "Documentation",
+    "creator": "Créateur",
+    "copyright": "© {{year}} CommitPulse. Tous droits réservés."
+  },
+  "landing": {
+    "title": "Sublimez Votre\nHistoire de Contributions.",
+    "subtitle": "Ne vous contentez plus de grilles plates. Générez des monolithes 3D isométriques haute fidélité qui visualisent votre rythme de codage avec une précision professionnelle.",
+    "watch_dashboard": "Voir le tableau de bord",
+    "discord_community": "Rejoindre la communauté sur Discord",
+    "input_placeholder": "Entrez votre nom d'utilisateur GitHub",
+    "clear_input": "Effacer la saisie",
+    "copy_link": "Copier le lien",
+    "copied": "Copié",
+    "recent": "Récent:",
+    "clear": "Effacer",
+    "preview_placeholder_title": "Entrez un nom d'utilisateur GitHub pour prévisualiser",
+    "preview_placeholder_desc": "Votre monolithe de contributions 3D apparaîtra ici dès que vous aurez ajouté un nom d'utilisateur.",
+    "preview_auto_theme": "Le thème aléatoire change à chaque chargement de page et désactive le cache",
+    "preview_caching_tip": "L'aperçu se met à jour à chaque modification. Le badge hébergé est mis en cache à minuit UTC",
+    "preview_empty_tip": "Ajoutez un nom d'utilisateur pour activer l'aperçu en direct et les extraits d'export",
+    "features": {
+      "sync_title": "Synchronisation en temps réel",
+      "sync_desc": "Extrait directement de l'API GraphQL de GitHub. Votre série de commits se met à jour aussi vite que vous poussez votre code.",
+      "theme_title": "Moteur de Thèmes",
+      "theme_desc": "Basculez entre les modes Néon, Dracula ou HEX personnalisés via une gestion simple des URL."
+    }
+  },
+  "success_guide": {
+    "title": "Votre Monolithe est Prêt - Déployez-le en 4 étapes",
+    "markdown_copied": "Markdown copié",
+    "step_1_title": "Ouvrez le dépôt de votre profil",
+    "step_1_body": "Rendez-vous sur github.com/VOTRE_PSEUDO/VOTRE_PSEUDO - votre dépôt de profil spécial.",
+    "step_2_title": "Modifiez le fichier README.md",
+    "step_2_body": "Cliquez sur l'icône de crayon pour ouvrir le fichier dans l'éditeur intégré de GitHub.",
+    "step_3_title": "Collez l'extrait",
+    "step_3_body": "Placez votre curseur là où vous souhaitez que le monolithe apparaisse, puis collez (Ctrl+V / Cmd+V).",
+    "step_4_title": "Enregistrez et publiez",
+    "step_4_body": "Cliquez sur \"Commit changes\" et visitez votre profil. Votre série 3D est désormais en ligne.",
+    "copied_snippet_label": "Votre extrait copié",
+    "color_tip": "Astuce : Ajoutez ?accent=808080 à l'URL pour changer la palette de couleurs de votre monolithe.",
+    "watch_dashboard_btn": "Voir votre tableau de bord",
+    "customize_more_btn": "Envie de personnaliser davantage ?"
+  },
+  "customize_cta": {
+    "studio_badge": "Studio de Personnalisation",
+    "title": "Envie de peaufiner votre monolithe ?",
+    "desc": "Ajustez chaque pixel — modifiez les couleurs d'accentuation, essayez un thème sombre ou néon, activez l'échelle de hauteur logarithmique et prévisualisez les modifications en direct avant de coller la moindre ligne.",
+    "btn": "Ouvrir le Studio de Personnalisation"
+  },
+  "customize": {
+    "back_to_home": "Retour à l'accueil",
+    "title": "Peaufinez votre monolithe.",
+    "desc": "Chaque modification ci-dessous met à jour l'aperçu en temps réel. Copiez l'extrait d'exportation lorsque vous avez terminé. Aucune étape supplémentaire requise.",
+    "live_preview": "Aperçu en direct",
+    "active_params": "Paramètres actifs",
+    "empty_preview_desc": "L'aperçu en direct du badge apparaîtra ici une fois qu'un nom d'utilisateur aura été ajouté.",
+    "controls": {
+      "username": "Nom d'utilisateur GitHub",
+      "username_placeholder": "Entrez le nom d'utilisateur...",
+      "select_theme": "Sélectionner le thème",
+      "theme_placeholder": "Sélectionner un thème prédéfini",
+      "theme_mode": "Mode thématique",
+      "custom_bg": "Arrière-plan personnalisé",
+      "custom_accent": "Accentuation personnalisée",
+      "custom_text": "Texte personnalisé",
+      "log_scaling": "Échelle de hauteur logarithmique",
+      "speed": "Vitesse d'animation",
+      "radius": "Rayon des coins",
+      "badge_size": "Taille du badge",
+      "sync_year": "Année de synchronisation",
+      "clear_custom": "Effacer les couleurs personnalisées",
+      "theme_presets": "Préréglage de thème",
+      "color_overrides": "Surcharges de couleurs personnalisées"
+    },
+    "export": {
+      "snippet_title": "Extrait d'exportation",
+      "snippet_desc": "Basculez entre les formats sans modifier la configuration du badge en direct.",
+      "markdown": "Markdown",
+      "html": "HTML",
+      "copy_format": "Copier le {{format}}",
+      "copied": "Copié !",
+      "copy_aria_disabled": "Ajoutez un nom d'utilisateur GitHub pour activer la copie de l'extrait d'exportation {{format}}",
+      "copy_aria_enabled": "Copier l'extrait d'exportation {{format}} dans le presse-papiers",
+      "footer_tip": "Collez ceci dans le fichier README.md de votre profil GitHub. Le badge est généré côté serveur, aucun script n'est requis."
+    }
+  },
+  "dashboard": {
+    "generate_btn": "Générer votre propre tableau de bord",
+    "refresh_btn": "Actualiser les données",
+    "refreshing": "Actualisation...",
+    "refreshed_toast": "Tableau de bord actualisé avec succès",
+    "profile": {
+      "score": "Score du développeur",
+      "repos": "Dépôts",
+      "followers": "Abonnés",
+      "following": "Abonnements",
+      "stars": "Étoiles",
+      "joined": "Rejoint en",
+      "pro_badge": "PRO"
+    },
+    "achievements": {
+      "title": "Succès",
+      "see_all": "Voir tous les succès",
+      "show_less": "Voir moins"
+    },
+    "activity": {
+      "title": "Activité globale",
+      "year": "Année",
+      "month": "Mois",
+      "week": "Semaine",
+      "commits": "Commits",
+      "intensity": "Intensité des commits"
+    },
+    "languages": {
+      "title": "Répartition des langues",
+      "primary": "Langue principale",
+      "no_data": "Aucune donnée de langue trouvée"
+    },
+    "clock": {
+      "title": "Horloge des commits",
+      "active_days": "Jours actifs"
+    },
+    "heatmap": {
+      "title": "Carte thermique des contributions",
+      "less": "Moins",
+      "more": "Plus",
+      "last_365": "365 derniers jours",
+      "tooltip_single": "{{count}} contribution le {{date}}",
+      "tooltip_plural": "{{count}} contributions le {{date}}"
+    },
+    "insights": {
+      "title": "Analyses de l'IA"
+    },
+    "stats": {
+      "current_streak": "Série actuelle",
+      "peak_streak": "Série maximale",
+      "contributions": "Contributions",
+      "days": "Jours",
+      "last_year": "L'année dernière",
+      "utc_disclaimer": "Série de commits calculée dans le fuseau horaire UTC"
+    },
+    "share": {
+      "title": "Partager l'activité",
+      "close_aria": "Fermer le panneau des options de partage",
+      "copy_link": "Copier le lien",
+      "copy_link_desc": "Copier l'URL de votre profil dans le presse-papiers",
+      "link_copied": "Lien copié !",
+      "share_x": "Partager sur X",
+      "share_x_desc": "Tweetez votre activité sur X",
+      "share_linkedin": "Partager sur LinkedIn",
+      "share_linkedin_desc": "Publiez votre activité de dev sur votre réseau",
+      "copy_markdown": "Copier le Markdown",
+      "copy_markdown_desc": "Copier l'extrait Markdown pour votre README",
+      "download_png": "Télécharger en PNG",
+      "download_png_desc": "Enregistrer une capture de votre tableau de bord",
+      "download_svg": "Télécharger l'SVG",
+      "download_svg_desc": "Télécharger l'SVG brut du monolithe",
+      "download_json": "Télécharger le JSON",
+      "download_json_desc": "Exporter les données brutes d'activité et de langues",
+      "share_os": "Partager via la feuille système",
+      "share_os_desc": "AirDrop, WhatsApp, Messages et plus",
+      "share_os_fallback": "Plus d'options",
+      "share_os_fallback_desc": "Ouvrir la boîte de dialogue de partage système",
+      "share_reddit": "Reddit",
+      "share_reddit_desc": "Partager sur Reddit",
+      "downloaded": "Téléchargé !",
+      "svg_downloaded": "SVG téléchargé !",
+      "json_downloaded": "JSON téléchargé !",
+      "failed": "Échec — réessayez"
+    }
+  }
+}

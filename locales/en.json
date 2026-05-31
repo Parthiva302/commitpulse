@@ -1,0 +1,188 @@
+{
+  "navbar": {
+    "home": "Go to home",
+    "repo": "GitHub Repo",
+    "contributors": "Contributors",
+    "theme_toggle": "Toggle theme",
+    "menu_open": "Open menu",
+    "menu_close": "Close menu"
+  },
+  "footer": {
+    "tagline": "Designed for the elite builder community.",
+    "contributors": "Contributors",
+    "documentation": "Documentation",
+    "creator": "Creator",
+    "copyright": "© {{year}} CommitPulse. All rights reserved."
+  },
+  "landing": {
+    "title": "Elevate Your\nContribution Story.",
+    "subtitle": "Stop settling for flat grids. Generate high-fidelity, 3D isometric monoliths that visualize your coding rhythm with professional precision.",
+    "watch_dashboard": "Watch Dashboard",
+    "discord_community": "Join the community on Discord",
+    "input_placeholder": "Enter GitHub Username",
+    "clear_input": "Clear input",
+    "copy_link": "Copy Link",
+    "copied": "Copied",
+    "recent": "Recent:",
+    "clear": "Clear",
+    "preview_placeholder_title": "Enter a GitHub username to preview",
+    "preview_placeholder_desc": "Your 3D contribution monolith will appear here as soon as you add a username.",
+    "preview_auto_theme": "Random theme changes on every page load and disables caching",
+    "preview_caching_tip": "Preview updates on every change. Hosted badge is cached at UTC midnight",
+    "preview_empty_tip": "Add a username to enable live preview and export snippets",
+    "features": {
+      "sync_title": "Real-time Sync",
+      "sync_desc": "Pulled directly from GitHub GraphQL API. Your streak updates as fast as your code pushes.",
+      "theme_title": "Theme Engine",
+      "theme_desc": "Switch between Neon, Dracula, or custom HEX modes via simple URL management.",
+      "isometric_title": "Isometric Math",
+      "isometric_desc": "Sophisticated 3D projection formulas turn 2D data into digital architecture."
+    }
+  },
+  "success_guide": {
+    "title": "Your Monolith is Ready - Deploy It in 4 Steps",
+    "markdown_copied": "Markdown Copied",
+    "step_1_title": "Open Your Profile Repo",
+    "step_1_body": "Navigate to github.com/YOUR_USERNAME/YOUR_USERNAME - your special profile repository.",
+    "step_2_title": "Edit README.md",
+    "step_2_body": "Click the pencil icon to open the file in GitHub's built-in editor.",
+    "step_3_title": "Paste the Snippet",
+    "step_3_body": "Place your cursor wherever you want the monolith to appear, then paste (Ctrl+V / Cmd+V).",
+    "step_4_title": "Save & Ship It",
+    "step_4_body": "Click \"Commit changes\" and visit your profile. Your 3D streak is now live.",
+    "copied_snippet_label": "Your copied snippet",
+    "color_tip": "Tip: Add ?accent=808080 to the URL to change your monolith's colour palette.",
+    "watch_dashboard_btn": "Watch Your Dashboard",
+    "customize_more_btn": "Want to customize more?"
+  },
+  "customize_cta": {
+    "studio_badge": "Customization Studio",
+    "title": "Want to fine-tune your monolith?",
+    "desc": "Dial in every pixel — swap accent colors, try a dark or neon theme, toggle logarithmic height scaling, and preview changes live before you paste a single line.",
+    "btn": "Open Customization Studio"
+  },
+  "customize": {
+    "back_to_home": "Back to Home",
+    "title": "Fine-tune your monolith.",
+    "desc": "Every change below updates the preview in real-time. Copy the export snippet when you're done. No extra steps required.",
+    "live_preview": "Live Preview",
+    "active_params": "Active Parameters",
+    "empty_preview_desc": "The live badge preview will appear here once a username is added.",
+    "controls": {
+      "username": "GitHub Username",
+      "username_placeholder": "Enter username...",
+      "select_theme": "Select Theme",
+      "theme_placeholder": "Select Preset Theme",
+      "theme_mode": "Theme Mode",
+      "custom_bg": "Custom Background",
+      "custom_accent": "Custom Accent",
+      "custom_text": "Custom Text",
+      "log_scaling": "Logarithmic Height Scaling",
+      "speed": "Animation Speed",
+      "radius": "Corner Radius",
+      "badge_size": "Badge Size",
+      "sync_year": "Sync Year",
+      "clear_custom": "Clear Custom Colors",
+      "theme_presets": "Theme Preset",
+      "color_overrides": "Custom Color Overrides"
+    },
+    "export": {
+      "snippet_title": "Export Snippet",
+      "snippet_desc": "Switch formats without changing the live badge configuration.",
+      "markdown": "Markdown",
+      "html": "HTML",
+      "copy_format": "Copy {{format}}",
+      "copied": "Copied!",
+      "copy_aria_disabled": "Add a GitHub username to enable copying the {{format}} export snippet",
+      "copy_aria_enabled": "Copy {{format}} export snippet to clipboard",
+      "footer_tip": "Paste this into your GitHub profile's README.md. The badge renders server-side, no script required."
+    }
+  },
+  "dashboard": {
+    "generate_btn": "Generate Your Own Dashboard",
+    "refresh_btn": "Refresh Data",
+    "refreshing": "Refreshing...",
+    "refreshed_toast": "Dashboard refreshed successfully",
+    "profile": {
+      "score": "Developer Score",
+      "repos": "Repositories",
+      "followers": "Followers",
+      "following": "Following",
+      "stars": "Stars",
+      "joined": "Joined",
+      "pro_badge": "PRO",
+      "pro": "PRO",
+      "share": "Share Your Pulse"
+    },
+    "achievements": {
+      "title": "Achievements",
+      "see_all": "See All Achievements",
+      "show_less": "Show Less"
+    },
+    "activity": {
+      "title": "Activity Landscape",
+      "year": "Year",
+      "month": "Month",
+      "week": "Week",
+      "commits": "Commits",
+      "intensity": "Commit Intensity"
+    },
+    "languages": {
+      "title": "Language Breakdown",
+      "primary": "Primary Language",
+      "no_data": "No language data found"
+    },
+    "clock": {
+      "title": "Commit Clock",
+      "active_days": "Active Days"
+    },
+    "heatmap": {
+      "title": "Contribution Heatmap",
+      "less": "Less",
+      "more": "More",
+      "last_365": "Last 365 days",
+      "tooltip_single": "{{count}} contribution on {{date}}",
+      "tooltip_plural": "{{count}} contributions on {{date}}"
+    },
+    "insights": {
+      "title": "AI Insights"
+    },
+    "stats": {
+      "current_streak": "Current Streak",
+      "peak_streak": "Peak Streak",
+      "contributions": "Contributions",
+      "days": "Days",
+      "last_year": "Last Year",
+      "utc_disclaimer": "Streak calculated in UTC timezone"
+    },
+    "share": {
+      "title": "Share Pulse",
+      "close_aria": "Close share options panel",
+      "copy_link": "Copy Link",
+      "copy_link_desc": "Copy your profile URL to clipboard",
+      "link_copied": "Link Copied!",
+      "share_x": "Share on X",
+      "share_x_desc": "Tweet your pulse to the world",
+      "share_linkedin": "Share on LinkedIn",
+      "share_linkedin_desc": "Post your dev activity to your network",
+      "copy_markdown": "Copy Markdown",
+      "copy_markdown_desc": "Copy markdown snippet for your README",
+      "download_png": "Download as PNG",
+      "download_png_desc": "Save a snapshot of your dashboard",
+      "download_svg": "Download SVG",
+      "download_svg_desc": "Download the raw monolith SVG",
+      "download_json": "Download JSON",
+      "download_json_desc": "Export raw streak and language data",
+      "share_os": "Share via OS Sheet",
+      "share_os_desc": "AirDrop, WhatsApp, Messages & more",
+      "share_os_fallback": "More Options",
+      "share_os_fallback_desc": "Open the system share dialog",
+      "share_reddit": "Reddit",
+      "share_reddit_desc": "Share on Reddit",
+      "downloaded": "Downloaded!",
+      "svg_downloaded": "SVG Downloaded!",
+      "json_downloaded": "JSON Downloaded!",
+      "failed": "Failed — try again"
+    }
+  }
+}

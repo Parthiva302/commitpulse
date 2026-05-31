@@ -1,0 +1,184 @@
+{
+  "navbar": {
+    "home": "返回首页",
+    "repo": "GitHub 仓库",
+    "contributors": "贡献者",
+    "theme_toggle": "切换主题",
+    "menu_open": "打开菜单",
+    "menu_close": "关闭菜单"
+  },
+  "footer": {
+    "tagline": "专为精英开发者社区设计。",
+    "contributors": "贡献者",
+    "documentation": "开发文档",
+    "creator": "创作者",
+    "copyright": "© {{year}} CommitPulse. 保留所有权利。"
+  },
+  "landing": {
+    "title": "提升您的\n贡献故事。",
+    "subtitle": "别再满足于扁平的网格。生成高保真的 3D 等距柱状图，以专业的精度可视化您的编码节奏。",
+    "watch_dashboard": "查看仪表盘",
+    "discord_community": "加入 Discord 社区",
+    "input_placeholder": "输入 GitHub 用户名",
+    "clear_input": "清空输入",
+    "copy_link": "复制链接",
+    "copied": "已复制",
+    "recent": "最近搜索:",
+    "clear": "清除",
+    "preview_placeholder_title": "输入 GitHub 用户名以进行预览",
+    "preview_placeholder_desc": "添加用户名后，您的 3D 贡献柱状图将在此处显示。",
+    "preview_auto_theme": "随机主题在每次加载页面时都会更改，且禁用缓存",
+    "preview_caching_tip": "预览在每次更改时都会更新。托管的徽章在 UTC 午夜被缓存",
+    "preview_empty_tip": "添加用户名以启用实时预览和导出代码片段",
+    "features": {
+      "sync_title": "实时同步",
+      "sync_desc": "直接从 GitHub GraphQL API 获取。您的连续提交天数与代码推送速度保持同步。",
+      "theme_title": "主题引擎",
+      "theme_desc": "通过简单的 URL 管理在 Neon、Dracula 或自定义十六进制 (HEX) 模式之间进行切换。"
+    }
+  },
+  "success_guide": {
+    "title": "您的柱状图已准备就绪 - 仅需 4 步即可部署",
+    "markdown_copied": "Markdown 已复制",
+    "step_1_title": "打开您的个人主页仓库",
+    "step_1_body": "前往 github.com/您的用户名/您的用户名 - 您的专属个人资料仓库。",
+    "step_2_title": "编辑 README.md",
+    "step_2_body": "点击铅笔图标以在 GitHub 内置的编辑器中打开文件。",
+    "step_3_title": "粘贴代码片段",
+    "step_3_body": "将光标移至您希望柱状图出现的位置，然后粘贴 (Ctrl+V / Cmd+V)。",
+    "step_4_title": "保存并发布",
+    "step_4_body": "点击 \"Commit changes\" 并查看您的个人主页。您的 3D 柱状图现在已上线。",
+    "copied_snippet_label": "已复制的代码片段",
+    "color_tip": "提示：在 URL 中添加 ?accent=808080 以更改您的柱状图配色方案。",
+    "watch_dashboard_btn": "查看您的仪表盘",
+    "customize_more_btn": "想要更多自定义选项？"
+  },
+  "customize_cta": {
+    "studio_badge": "自定义工作室",
+    "title": "想要微调您的柱状图吗？",
+    "desc": "精确调整每个像素 — 调整强调色、尝试暗色或霓虹主题、切换对数高度缩放，并在粘贴任何代码之前实时预览所有更改。",
+    "btn": "打开自定义工作室"
+  },
+  "customize": {
+    "back_to_home": "返回首页",
+    "title": "微调您的柱状图。",
+    "desc": "下方的每项更改都会实时更新预览。完成后复制导出代码片段。无需额外操作。",
+    "live_preview": "实时预览",
+    "active_params": "当前参数",
+    "empty_preview_desc": "添加用户名后，实时徽章预览将在此处显示。",
+    "controls": {
+      "username": "GitHub 用户名",
+      "username_placeholder": "输入用户名...",
+      "select_theme": "选择主题",
+      "theme_placeholder": "选择预设主题",
+      "theme_mode": "主题模式",
+      "custom_bg": "自定义背景",
+      "custom_accent": "自定义强调色",
+      "custom_text": "自定义文本",
+      "log_scaling": "对数高度缩放",
+      "speed": "动画速度",
+      "radius": "圆角半径",
+      "badge_size": "徽章大小",
+      "sync_year": "同步年份",
+      "clear_custom": "清空自定义颜色",
+      "theme_presets": "主题预设",
+      "color_overrides": "自定义颜色覆盖"
+    },
+    "export": {
+      "snippet_title": "导出片段",
+      "snippet_desc": "在不改变实时徽章配置的情况下切换导出格式。",
+      "markdown": "Markdown",
+      "html": "HTML",
+      "copy_format": "复制 {{format}}",
+      "copied": "已复制！",
+      "copy_aria_disabled": "添加 GitHub 用户名以复制 {{format}} 导出片段",
+      "copy_aria_enabled": "将 {{format}} 导出片段复制到剪贴板",
+      "footer_tip": "将此片段粘贴到您的 GitHub 个人主页 README.md 文件中。徽章由服务器端渲染，无需任何脚本。"
+    }
+  },
+  "dashboard": {
+    "generate_btn": "生成您自己的仪表盘",
+    "refresh_btn": "刷新数据",
+    "refreshing": "正在刷新...",
+    "refreshed_toast": "仪表盘刷新成功",
+    "profile": {
+      "score": "开发者评分",
+      "repos": "公共仓库",
+      "followers": "粉丝数量",
+      "following": "关注数量",
+      "stars": "收获星标",
+      "joined": "加入时间",
+      "pro_badge": "PRO"
+    },
+    "achievements": {
+      "title": "个人成就",
+      "see_all": "查看所有成就",
+      "show_less": "显示部分"
+    },
+    "activity": {
+      "title": "活动全景",
+      "year": "年",
+      "month": "月",
+      "week": "周",
+      "commits": "次提交",
+      "intensity": "提交强度"
+    },
+    "languages": {
+      "title": "语言分布",
+      "primary": "主要开发语言",
+      "no_data": "未找到语言数据"
+    },
+    "clock": {
+      "title": "提交时钟",
+      "active_days": "活跃天数"
+    },
+    "heatmap": {
+      "title": "贡献热力图",
+      "less": "较少",
+      "more": "较多",
+      "last_365": "过去 365 天",
+      "tooltip_single": "在 {{date}} 进行了 {{count}} 次贡献",
+      "tooltip_plural": "在 {{date}} 进行了 {{count}} 次贡献"
+    },
+    "insights": {
+      "title": "AI 数据洞察"
+    },
+    "stats": {
+      "current_streak": "当前连续天数",
+      "peak_streak": "历史最高连续",
+      "contributions": "总贡献次数",
+      "days": "天",
+      "last_year": "去年的提交",
+      "utc_disclaimer": "提交天数以 UTC 时区计算"
+    },
+    "share": {
+      "title": "分享数据脉搏",
+      "close_aria": "关闭分享面板",
+      "copy_link": "复制链接",
+      "copy_link_desc": "将您的个人仪表盘 URL 复制到剪贴板",
+      "link_copied": "链接已复制！",
+      "share_x": "分享到 X",
+      "share_x_desc": "将您的贡献脉搏推送到 X",
+      "share_linkedin": "分享到 LinkedIn",
+      "share_linkedin_desc": "向您的网络发布您的开发活动",
+      "copy_markdown": "复制 Markdown",
+      "copy_markdown_desc": "复制适用于您 README 的 Markdown 片段",
+      "download_png": "下载为 PNG",
+      "download_png_desc": "保存您仪表盘 of 的截图",
+      "download_svg": "下载 SVG",
+      "download_svg_desc": "下载原始等距柱状图 SVG 图像",
+      "download_json": "下载 JSON",
+      "download_json_desc": "导出连续天数和语言的原始 JSON 数据",
+      "share_os": "通过系统分享",
+      "share_os_desc": "AirDrop, 微信, 短信等更多渠道",
+      "share_os_fallback": "更多选项",
+      "share_os_fallback_desc": "打开系统原生分享对话框",
+      "share_reddit": "Reddit",
+      "share_reddit_desc": "分享到 Reddit",
+      "downloaded": "已下载！",
+      "svg_downloaded": "SVG 已下载！",
+      "json_downloaded": "JSON 已下载！",
+      "failed": "操作失败 — 请重试"
+    }
+  }
+}

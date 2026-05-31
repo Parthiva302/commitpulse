@@ -52,6 +52,7 @@ vi.mock('lucide-react', () => ({
   Menu: () => <div>MenuIcon</div>,
   X: () => <div>CloseIcon</div>,
   Activity: () => <div>ActivityIcon</div>,
+  Globe: () => <div>GlobeIcon</div>,
   Sun: () => <div>SunIcon</div>,
   Moon: () => <div>MoonIcon</div>,
 }));
@@ -127,7 +128,6 @@ describe('Navbar responsive breakpoints', () => {
     expect(screen.getByRole('button', { name: /close menu/i }).getAttribute('aria-expanded')).toBe(
       'true'
     );
-    expect(screen.getAllByRole('link', { name: /customization studio/i })).toHaveLength(2);
     expect(screen.getAllByRole('link', { name: /github repo/i })).toHaveLength(2);
   });
 
@@ -149,7 +149,6 @@ describe('Navbar responsive breakpoints', () => {
     expect(screen.getByRole('button', { name: /open menu/i }).getAttribute('aria-expanded')).toBe(
       'false'
     );
-    expect(screen.getAllByRole('link', { name: /customization studio/i })).toHaveLength(1);
     expect(screen.getAllByRole('link', { name: /github repo/i })).toHaveLength(1);
   });
 });

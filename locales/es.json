@@ -1,0 +1,188 @@
+{
+  "navbar": {
+    "home": "Ir al inicio",
+    "repo": "Repositorio de GitHub",
+    "contributors": "Colaboradores",
+    "theme_toggle": "Cambiar tema",
+    "menu_open": "Abrir menú",
+    "menu_close": "Cerrar menú"
+  },
+  "footer": {
+    "tagline": "Diseñado para la comunidad de desarrolladores de élite.",
+    "contributors": "Colaboradores",
+    "documentation": "Documentación",
+    "creator": "Creador",
+    "copyright": "© {{year}} CommitPulse. Todos los derechos reservados."
+  },
+  "landing": {
+    "title": "Eleva tu historia\nde contribuciones.",
+    "subtitle": "No te conformes con cuadrículas planas. Genera monolitos 3D isométricos de alta fidelidad que visualizan tu ritmo de programación con precisión profesional.",
+    "watch_dashboard": "Ver panel",
+    "discord_community": "Únete a la comunidad en Discord",
+    "input_placeholder": "Ingresa el usuario de GitHub",
+    "clear_input": "Limpiar entrada",
+    "copy_link": "Copiar enlace",
+    "copied": "Copiado",
+    "recent": "Recientes:",
+    "clear": "Limpiar",
+    "preview_placeholder_title": "Ingresa un usuario de GitHub para previsualizar",
+    "preview_placeholder_desc": "Tu monolito de contribuciones 3D aparecerá aquí tan pronto como agregues un usuario.",
+    "preview_auto_theme": "El tema aleatorio cambia en cada carga de página y desactiva el almacenamiento en caché",
+    "preview_caching_tip": "La previsualización se actualiza con cada cambio. La insignia se almacena en caché a la medianoche UTC",
+    "preview_empty_tip": "Agrega un usuario para habilitar la previsualización en vivo y los fragmentos de exportación",
+    "features": {
+      "sync_title": "Sincronización en tiempo real",
+      "sync_desc": "Obtenido directamente de la API GraphQL de GitHub. Tu racha se actualiza tan rápido como envías tu código.",
+      "theme_title": "Motor de temas",
+      "theme_desc": "Cambia entre Neon, Dracula o modos HEX personalizados mediante una administración de URL sencilla.",
+      "isometric_title": "Matemática isométrica",
+      "isometric_desc": "Sofisticadas fórmulas de proyección 3D convierten datos 2D en arquitectura digital."
+    }
+  },
+  "success_guide": {
+    "title": "Tu monolito está listo - Despliégalo en 4 pasos",
+    "markdown_copied": "Markdown copiado",
+    "step_1_title": "Abre el repositorio de tu perfil",
+    "step_1_body": "Navega a github.com/TU_USUARIO/TU_USUARIO - tu repositorio de perfil especial.",
+    "step_2_title": "Edita el README.md",
+    "step_2_body": "Haz clic en el icono del lápiz para abrir el archivo en el editor integrado de GitHub.",
+    "step_3_title": "Pega el fragmento",
+    "step_3_body": "Coloca el cursor donde quieras que aparezca el monolito, luego pega (Ctrl+V / Cmd+V).",
+    "step_4_title": "Guarda y publica",
+    "step_4_body": "Haz clic en \"Commit changes\" y visita tu perfil. Tu racha 3D ya está activa.",
+    "copied_snippet_label": "Tu fragmento copiado",
+    "color_tip": "Consejo: Agrega ?accent=808080 a la URL para cambiar la paleta de colores de tu monolito.",
+    "watch_dashboard_btn": "Ver tu panel",
+    "customize_more_btn": "¿Quieres personalizar más?"
+  },
+  "customize_cta": {
+    "studio_badge": "Estudio de personalización",
+    "title": "¿Quieres ajustar tu monolito?",
+    "desc": "Ajusta cada píxel: cambia los colores de acento, prueba un tema oscuro o neón, activa la escala de altura logarítmica y previsualiza los cambios en vivo antes de pegar una sola línea.",
+    "btn": "Abrir estudio de personalización"
+  },
+  "customize": {
+    "back_to_home": "Volver al inicio",
+    "title": "Ajusta tu monolito.",
+    "desc": "Cada cambio a continuación actualiza la previsualización en tiempo real. Copia el fragmento de exportación cuando termines. Sin pasos adicionales.",
+    "live_preview": "Previsualización en vivo",
+    "active_params": "Parámetros activos",
+    "empty_preview_desc": "La previsualización en vivo de la insignia aparecerá aquí una vez que se agregue un usuario.",
+    "controls": {
+      "username": "Usuario de GitHub",
+      "username_placeholder": "Ingresa usuario...",
+      "select_theme": "Seleccionar tema",
+      "theme_placeholder": "Seleccionar tema preestablecido",
+      "theme_mode": "Modo de tema",
+      "custom_bg": "Fondo personalizado",
+      "custom_accent": "Acento personalizado",
+      "custom_text": "Texto personalizado",
+      "log_scaling": "Escala de altura logarítmica",
+      "speed": "Velocidad de animación",
+      "radius": "Radio de esquina",
+      "badge_size": "Tamaño de insignia",
+      "sync_year": "Año de sincronización",
+      "clear_custom": "Limpiar colores personalizados",
+      "theme_presets": "Tema preestablecido",
+      "color_overrides": "Colores personalizados"
+    },
+    "export": {
+      "snippet_title": "Fragmento de exportación",
+      "snippet_desc": "Cambia de formato sin alterar la configuración de la insignia en vivo.",
+      "markdown": "Markdown",
+      "html": "HTML",
+      "copy_format": "Copiar {{format}}",
+      "copied": "¡Copiado!",
+      "copy_aria_disabled": "Agrega un usuario de GitHub para habilitar la copia del fragmento de exportación {{format}}",
+      "copy_aria_enabled": "Copiar fragmento de exportación {{format}} al portapapeles",
+      "footer_tip": "Pega esto en el README.md de tu perfil de GitHub. La insignia se genera en el servidor, no requiere scripts."
+    }
+  },
+  "dashboard": {
+    "generate_btn": "Generar tu propio panel",
+    "refresh_btn": "Actualizar datos",
+    "refreshing": "Actualizando...",
+    "refreshed_toast": "Panel actualizado con éxito",
+    "profile": {
+      "score": "Puntaje de desarrollador",
+      "repos": "Repositorios",
+      "followers": "Seguidores",
+      "following": "Siguiendo",
+      "stars": "Estrellas",
+      "joined": "Unido en",
+      "pro_badge": "PRO",
+      "pro": "PRO",
+      "share": "Compartir tu Pulse"
+    },
+    "achievements": {
+      "title": "Logros",
+      "see_all": "Ver todos los logros",
+      "show_less": "Ver menos"
+    },
+    "activity": {
+      "title": "Paisaje de actividad",
+      "year": "Año",
+      "month": "Mes",
+      "week": "Semana",
+      "commits": "Commits",
+      "intensity": "Intensidad de commits"
+    },
+    "languages": {
+      "title": "Desglose de idiomas",
+      "primary": "Idioma principal",
+      "no_data": "No se encontraron datos de idiomas"
+    },
+    "clock": {
+      "title": "Reloj de commits",
+      "active_days": "Días activos"
+    },
+    "heatmap": {
+      "title": "Mapa de calor de contribuciones",
+      "less": "Menos",
+      "more": "Más",
+      "last_365": "Últimos 365 días",
+      "tooltip_single": "{{count}} contribución el {{date}}",
+      "tooltip_plural": "{{count}} contribuciones el {{date}}"
+    },
+    "insights": {
+      "title": "Ideas de IA"
+    },
+    "stats": {
+      "current_streak": "Racha actual",
+      "peak_streak": "Racha máxima",
+      "contributions": "Contribuciones",
+      "days": "Días",
+      "last_year": "El año pasado",
+      "utc_disclaimer": "Racha calculada en la zona horaria UTC"
+    },
+    "share": {
+      "title": "Compartir racha",
+      "close_aria": "Cerrar panel de opciones para compartir",
+      "copy_link": "Copiar enlace",
+      "copy_link_desc": "Copiar URL de tu perfil al portapapeles",
+      "link_copied": "¡Enlace copiado!",
+      "share_x": "Compartir en X",
+      "share_x_desc": "Publica tu racha en X",
+      "share_linkedin": "Compartir en LinkedIn",
+      "share_linkedin_desc": "Publica tu actividad de desarrollo en tu red",
+      "copy_markdown": "Copiar Markdown",
+      "copy_markdown_desc": "Copiar fragmento Markdown para tu README",
+      "download_png": "Descargar PNG",
+      "download_png_desc": "Guardar una captura de tu panel",
+      "download_svg": "Descargar SVG",
+      "download_svg_desc": "Descargar el archivo SVG original del monolito",
+      "download_json": "Descargar JSON",
+      "download_json_desc": "Exportar datos brutos de racha e idiomas",
+      "share_os": "Compartir mediante OS Sheet",
+      "share_os_desc": "AirDrop, WhatsApp, Mensajes y más",
+      "share_os_fallback": "Más opciones",
+      "share_os_fallback_desc": "Abrir el cuadro de diálogo para compartir del sistema",
+      "share_reddit": "Reddit",
+      "share_reddit_desc": "Compartir en Reddit",
+      "downloaded": "¡Descargado!",
+      "svg_downloaded": "¡SVG descargado!",
+      "json_downloaded": "¡JSON descargado!",
+      "failed": "Error — intenta de nuevo"
+    }
+  }
+}

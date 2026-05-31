@@ -2,25 +2,11 @@
 
 import { motion } from 'framer-motion';
 import { LanguageData } from '@/types/dashboard';
+import { useTranslation } from '@/context/TranslationContext';
 
-export function buildGradientStops(languages: LanguageData[]): string {
-  return languages
-    .reduce<{ stops: string[]; current: number }>(
-      (acc, lang) => {
-        const next = acc.current + lang.percentage;
-
-        acc.stops.push(`${lang.color} ${acc.current}% ${next}%`);
-
-        return {
-          stops: acc.stops,
-          current: next,
-        };
-      },
-      { stops: [], current: 0 }
-    )
-    .stops.join(', ');
-}
 export default function LanguageChart({ languages }: { languages: LanguageData[] }) {
+  const { t } = useTranslation();
+
   if (languages.length === 0) {
     return (
       <motion.div
@@ -28,20 +14,31 @@ export default function LanguageChart({ languages }: { languages: LanguageData[]
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.3 }}
-        className="p-6 rounded-xl bg-white dark:bg-[#0a0a0a] border border-black/10 dark:border-[rgba(255,255,255,0.08)] flex flex-col min-h-[300px]"
+        className="p-6 rounded-xl bg-white dark:bg-[#0a0a0a] border border-black/10 dark:border-[rgba(255,255,255,0.08)] shadow-sm flex flex-col min-h-[300px]"
       >
-        <h3 className="text-sm font-semibold text-gray-900 dark:text-white w-full text-left mb-6 tracking-tight">
-          Top Languages
+        <h3 className="text-sm font-semibold text-zinc-900 dark:text-white w-full text-left mb-6 tracking-tight">
+          {t('dashboard.languages.title')}
         </h3>
 
         <div className="flex flex-1 items-center justify-center text-center">
-          <p className="text-sm text-[#A1A1AA]">No language data found</p>
+          <p className="text-sm text-zinc-500 dark:text-[#A1A1AA]">
+            {t('dashboard.languages.no_data')}
+          </p>
         </div>
       </motion.div>
     );
   }
 
-  const gradientStops = buildGradientStops(languages);
+  const gradientStops = languages
+    .reduce<{ stops: string[]; current: number }>(
+      (acc, lang) => {
+        const next = acc.current + lang.percentage;
+        acc.stops.push(`${lang.color} ${acc.current}% ${next}%`);
+        return { stops: acc.stops, current: next };
+      },
+      { stops: [], current: 0 }
+    )
+    .stops.join(', ');
 
   return (
     <motion.div
@@ -49,16 +46,15 @@ export default function LanguageChart({ languages }: { languages: LanguageData[]
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.3 }}
-      className="p-6 rounded-xl bg-white dark:bg-[#0a0a0a] border border-black/10 dark:border-[rgba(255,255,255,0.08)] flex flex-col items-center justify-between min-h-[300px]"
+      className="p-6 rounded-xl bg-white dark:bg-[#0a0a0a] border border-black/10 dark:border-[rgba(255,255,255,0.08)] shadow-sm flex flex-col items-center justify-between min-h-[300px]"
     >
-      <h3 className="text-sm font-semibold text-gray-900 dark:text-white w-full text-left mb-6 tracking-tight">
-        Top Languages
+      <h3 className="text-sm font-semibold text-zinc-900 dark:text-white w-full text-left mb-6 tracking-tight">
+        {t('dashboard.languages.title')}
       </h3>
 
       <div className="relative w-36 h-36 flex items-center justify-center">
         {/* Donut */}
         <motion.div
-          data-testid="donut-chart"
           initial={{ rotate: -90, scale: 0.8, opacity: 0 }}
           animate={{ rotate: 0, scale: 1, opacity: 1 }}
           transition={{ duration: 0.8, type: 'spring', stiffness: 80 }}
@@ -71,10 +67,10 @@ export default function LanguageChart({ languages }: { languages: LanguageData[]
         />
         {/* Center */}
         <div className="relative z-10 flex flex-col items-center">
-          <span className="text-xl font-semibold text-gray-900 dark:text-white">
+          <span className="text-xl font-semibold text-zinc-900 dark:text-white">
             {languages[0].percentage}%
           </span>
-          <span className="text-[10px] text-[#A1A1AA] uppercase tracking-widest mt-0.5">
+          <span className="text-[10px] text-zinc-500 dark:text-[#A1A1AA] uppercase tracking-widest mt-0.5">
             {languages[0].name}
           </span>
         </div>
@@ -85,9 +81,9 @@ export default function LanguageChart({ languages }: { languages: LanguageData[]
           <div key={lang.name} className="flex items-center justify-between text-xs">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full" style={{ backgroundColor: lang.color }} />
-              <span className="text-[#A1A1AA]">{lang.name}</span>
+              <span className="text-zinc-500 dark:text-[#A1A1AA]">{lang.name}</span>
             </div>
-            <span className="font-mono text-gray-500 dark:text-white/60 text-[11px]">
+            <span className="font-mono text-zinc-600 dark:text-white/60 text-[11px]">
               {lang.percentage}%
             </span>
           </div>

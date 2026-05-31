@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
-import { Menu, X, Activity, Moon, Sun } from 'lucide-react';
+import { Menu, X, Activity, Globe } from 'lucide-react';
 import { useGlowEffect } from '@/hooks/useGlowEffect';
-import { useThemeToggle } from './theme-switch';
+import { useTranslation, LANGUAGE_LABELS, type Language } from '@/context/TranslationContext';
 
 function GithubMark() {
   return (
@@ -16,31 +16,57 @@ function GithubMark() {
 
 const NAV_LINKS = [
   {
-    label: 'Compare',
-    href: '/compare',
-    isExternal: false,
-  },
-  {
-    label: 'Customization Studio',
-    href: '/#customization-studio',
-    isExternal: false,
-  },
-  {
     label: 'GitHub Repo',
     href: 'https://github.com/JhaSourav07/commitpulse',
-    isExternal: true,
   },
 ];
 
+const emptySubscribe = () => () => {};
+
+function LanguageSelector() {
+  const { language, changeLanguage, isPending } = useTranslation();
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
+
+  if (!mounted) {
+    return (
+      <div className="w-24 h-9 rounded-xl border border-black/10 dark:border-white/15 bg-black/5 dark:bg-white/5" />
+    );
+  }
+
+  return (
+    <div
+      className={`relative inline-flex items-center gap-1.5 rounded-xl border border-black/10 dark:border-white/15 bg-black/5 dark:bg-white/5 px-2.5 py-1.5 text-black/90 dark:text-white/90 hover:bg-black/10 dark:hover:bg-white/10 transition-colors ${isPending ? 'opacity-50' : ''}`}
+    >
+      <Globe size={14} className="text-zinc-500 dark:text-white/40" />
+      <select
+        value={language}
+        onChange={(e) => changeLanguage(e.target.value as Language)}
+        className="bg-transparent text-xs font-semibold focus:outline-none cursor-pointer pr-1"
+        aria-label="Select Language"
+      >
+        {Object.entries(LANGUAGE_LABELS).map(([code, label]) => (
+          <option
+            key={code}
+            value={code}
+            className="bg-white dark:bg-black text-black dark:text-white"
+          >
+            {label}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
 export default function Navbar() {
   const [open, setOpen] = useState(false);
-
+  const { t } = useTranslation();
   const { shellRef, shellVars, handleMouseEnter, handleMouseMove, handleMouseLeave } =
     useGlowEffect();
-  const { isDark, mounted, toggleTheme } = useThemeToggle({
-    variant: 'circle',
-    start: 'top-right',
-  });
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(min-width: 768px)');
@@ -71,18 +97,18 @@ export default function Navbar() {
   };
 
   return (
-    <header className="relative z-50 px-4 pt-4 sm:px-6 w-full">
+    <header className="fixed inset-x-0 top-0 z-50 px-4 pt-4 sm:px-6">
       <div className="mx-auto max-w-6xl">
         <div
           ref={shellRef}
-          className="relative overflow-hidden rounded-2xl border border-gray-200 bg-white/70 dark:border-white/25 dark:bg-black/45 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.08)] dark:shadow-[0_14px_40px_rgba(0,0,0,0.45)] transition-colors duration-300"
+          className="relative overflow-hidden rounded-2xl border border-black/10 dark:border-white/25 bg-white/80 dark:bg-black/45 backdrop-blur-xl shadow-[0_14px_40px_rgba(0,0,0,0.1)] dark:shadow-[0_14px_40px_rgba(0,0,0,0.45)]"
           style={shellVars}
           onMouseEnter={handleMouseEnter}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
         >
           <div
-            className="pointer-events-none absolute inset-0 transition-opacity duration-300 ease-out hidden dark:block"
+            className="pointer-events-none absolute inset-0 transition-opacity duration-300 ease-out"
             style={{
               opacity: 'var(--glow-opacity)',
               background:
@@ -91,7 +117,7 @@ export default function Navbar() {
           />
           <div className="pointer-events-none absolute inset-0 rounded-2xl border border-black/5 dark:border-white/20" />
           <div
-            className="pointer-events-none absolute inset-0 rounded-2xl p-px transition-opacity duration-300 ease-out hidden dark:block"
+            className="pointer-events-none absolute inset-0 rounded-2xl p-px transition-opacity duration-300 ease-out"
             style={{
               opacity: 'var(--border-opacity)',
               background:
@@ -104,116 +130,68 @@ export default function Navbar() {
           <nav className="relative flex items-center justify-between px-4 py-3 sm:px-6">
             <Link
               href="/"
-              aria-label="Go to home"
+              aria-label={t('navbar.home')}
               className="group inline-flex items-center gap-3"
               onClick={handleLogoClick}
             >
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-gray-800 shadow-sm dark:border-white/35 dark:bg-white/10 dark:text-white dark:shadow-[0_0_25px_rgba(255,255,255,0.22)] transition-transform duration-300 group-hover:scale-105">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-black/10 dark:border-white/35 bg-black/5 dark:bg-white/10 text-black dark:text-white shadow-[0_0_25px_rgba(0,0,0,0.05)] dark:shadow-[0_0_25px_rgba(255,255,255,0.22)] transition-transform duration-300 group-hover:scale-105">
                 <Activity size={19} />
               </span>
-              <span className="text-base font-semibold tracking-[0.08em] text-gray-900 dark:text-white sm:text-lg">
+              <span className="text-base font-semibold tracking-[0.08em] text-black dark:text-white sm:text-lg">
                 CommitPulse
               </span>
             </Link>
 
             <div className="hidden items-center gap-3 md:flex">
-              <button
-                type="button"
-                onClick={toggleTheme}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-gray-700 transition hover:bg-gray-100 dark:border-white/15 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
-                aria-label="Toggle theme"
-              >
-                {mounted ? (
-                  isDark ? (
-                    <Moon size={18} />
-                  ) : (
-                    <Sun size={18} />
-                  )
-                ) : (
-                  <span className="w-[18px] h-[18px]" />
-                )}
-              </button>
-
+              <LanguageSelector />
               {NAV_LINKS.map((link) => (
                 <a
                   key={link.href}
                   href={link.href}
-                  target={link.isExternal ? '_blank' : undefined}
-                  rel={link.isExternal ? 'noopener noreferrer' : undefined}
-                  className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-2 text-sm font-medium text-gray-700 transition hover:border-gray-300 hover:bg-gray-100 dark:border-white/15 dark:bg-white/5 dark:text-white/90 dark:hover:border-white/45 dark:hover:bg-white/10"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-xl border border-black/10 dark:border-white/15 bg-black/5 dark:bg-white/5 px-4 py-2 text-sm font-medium text-black/90 dark:text-white/90 transition hover:border-black/20 dark:hover:border-white/45 hover:bg-black/10 dark:hover:bg-white/10"
                 >
-                  {link.isExternal && <GithubMark />}
-                  {link.label}
+                  <GithubMark />
+                  {link.label === 'GitHub Repo' ? t('navbar.repo') : link.label}
                 </a>
               ))}
             </div>
 
-            <div className="md:hidden inline-flex items-center justify-center gap-2">
-              <button
-                type="button"
-                onClick={toggleTheme}
-                className="hidden sm:inline-flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-gray-700 transition hover:bg-gray-100 dark:border-white/15 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
-                aria-label="Toggle theme"
-              >
-                {mounted ? (
-                  isDark ? (
-                    <Moon size={18} />
-                  ) : (
-                    <Sun size={18} />
-                  )
-                ) : (
-                  <span className="w-[18px] h-[18px]" />
-                )}
-              </button>
-              <button
-                type="button"
-                className="md:hidden inline-flex items-center justify-center rounded-xl border border-gray-200 bg-gray-50 p-2 text-gray-700 transition hover:bg-gray-100 dark:border-white/15 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10"
-                aria-label={open ? 'Close menu' : 'Open menu'}
-                aria-expanded={open}
-                onClick={() => setOpen((prev) => !prev)}
-              >
-                {open ? <X size={20} /> : <Menu size={20} />}
-              </button>
-            </div>
+            <button
+              type="button"
+              className="inline-flex items-center justify-center rounded-xl border border-black/10 dark:border-white/15 bg-black/5 dark:bg-white/5 p-2 text-black/90 dark:text-white/90 transition hover:bg-black/10 dark:hover:bg-white/10 md:hidden"
+              aria-label={open ? t('navbar.menu_close') : t('navbar.menu_open')}
+              aria-expanded={open}
+              onClick={() => setOpen((prev) => !prev)}
+            >
+              {open ? <X size={20} /> : <Menu size={20} />}
+            </button>
           </nav>
 
           {open ? (
-            <div className="border-t border-gray-200 dark:border-white/10 px-4 py-3 md:hidden">
-              <ul className="space-y-2">
+            <div className="border-t border-black/10 dark:border-white/10 px-4 py-3 md:hidden">
+              <ul className="space-y-3">
+                <li className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-black/60 dark:text-white/60">
+                    Language / Bhasha
+                  </span>
+                  <LanguageSelector />
+                </li>
                 {NAV_LINKS.map((link) => (
                   <li key={link.href}>
                     <a
                       href={link.href}
-                      target={link.isExternal ? '_blank' : undefined}
-                      rel={link.isExternal ? 'noopener noreferrer' : undefined}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       onClick={() => setOpen(false)}
-                      className="inline-flex w-full items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-2 text-sm font-medium text-gray-700 transition hover:border-gray-300 hover:bg-gray-100 dark:border-white/15 dark:bg-white/5 dark:text-white/90 dark:hover:border-white/45 dark:hover:bg-white/10"
+                      className="inline-flex w-full items-center gap-2 rounded-xl border border-black/10 dark:border-white/15 bg-black/5 dark:bg-white/5 px-4 py-2 text-sm font-medium text-black/90 dark:text-white/90 transition hover:border-black/20 dark:hover:border-white/45 hover:bg-black/10 dark:hover:bg-white/10"
                     >
-                      {link.isExternal && <GithubMark />}
-                      {link.label}
+                      <GithubMark />
+                      {link.label === 'GitHub Repo' ? t('navbar.repo') : link.label}
                     </a>
                   </li>
                 ))}
-
-                <li className="sm:hidden pt-2 mt-2 border-t border-gray-200 dark:border-white/10">
-                  <button
-                    type="button"
-                    onClick={toggleTheme}
-                    className="inline-flex w-full items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-2 text-sm font-medium text-gray-700 transition hover:border-gray-300 hover:bg-gray-100 dark:border-white/15 dark:bg-white/5 dark:text-white/90 dark:hover:border-white/45 dark:hover:bg-white/10"
-                    aria-label="Toggle theme"
-                  >
-                    {mounted ? (
-                      isDark ? (
-                        <Moon size={18} />
-                      ) : (
-                        <Sun size={18} />
-                      )
-                    ) : (
-                      <span className="w-[18px] h-[18px]" />
-                    )}
-                    {mounted ? (isDark ? 'Light Mode' : 'Dark Mode') : 'Theme'}
-                  </button>
-                </li>
               </ul>
             </div>
           ) : null}
