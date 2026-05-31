@@ -58,9 +58,17 @@ vi.mock('lucide-react', () => ({
 
 describe('Navbar mobile menu', () => {
   beforeEach(() => {
+    Object.defineProperty(window, 'localStorage', {
+      value: {
+        getItem: vi.fn(),
+        setItem: vi.fn(),
+        clear: vi.fn(),
+      },
+      writable: true,
+    });
     window.innerWidth = 500;
     mockMatchMedia(false);
-    window.localStorage.clear();
+    window.localStorage?.clear();
     document.documentElement.className = '';
   });
 
@@ -106,8 +114,16 @@ describe('Navbar mobile menu', () => {
 
 describe('Navbar responsive breakpoints', () => {
   beforeEach(() => {
+    Object.defineProperty(window, 'localStorage', {
+      value: {
+        getItem: vi.fn(),
+        setItem: vi.fn(),
+        clear: vi.fn(),
+      },
+      writable: true,
+    });
     window.innerWidth = 500;
-    window.localStorage.clear();
+    window.localStorage?.clear();
     document.documentElement.className = '';
   });
 
