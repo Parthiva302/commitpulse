@@ -142,6 +142,9 @@ export interface BadgeParams {
   /** Duration of the radar scan line animation (e.g. '4s', '8s', '12s'). Defaults to '8s'. */
   speed: SpeedString;
 
+  /** Animation style for the isometric towers on load: 'rise' (default), 'fade', 'slide', or 'none'. */
+  entrance?: 'rise' | 'fade' | 'slide' | 'none';
+
   /** Tower height scaling algorithm. 'linear' scales proportionally; 'log' uses logarithmic scale for high contributors. Defaults to 'linear'. */
   scale: Scale;
 
