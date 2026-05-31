@@ -126,7 +126,6 @@ describe('User Model', () => {
     it('fails queries gracefully with a ConnectionError when disconnected', async () => {
       const { vi } = await import('vitest');
 
-      // 1. Force the mongoose connection state to 0 (Disconnected)
       const readyStateSpy = vi
         .spyOn(mongoose.connection, 'readyState', 'get')
         .mockReturnValue(0 as unknown as typeof mongoose.connection.readyState);
@@ -139,7 +138,6 @@ describe('User Model', () => {
 
       const findOneSpy = vi.spyOn(User, 'findOne').mockRejectedValue(mockConnectionError);
 
-      // 3. Verify that attempting to query throws the expected ConnectionError
       await expect(User.findOne({ username: 'testuser' })).rejects.toThrow(
         'Database connection lost'
       );
@@ -147,7 +145,6 @@ describe('User Model', () => {
         name: 'ConnectionError',
       });
 
-      // 4. Clean up mocks to prevent side effects in other tests
       readyStateSpy.mockRestore();
       findOneSpy.mockRestore();
     });
@@ -157,12 +154,10 @@ describe('User Model', () => {
     it('aborts/rolls back active transactions cleanly when connection is in state 3 (disconnecting)', async () => {
       const { vi } = await import('vitest');
 
-      // 1. Mock mongoose.connection.readyState to return 3 (disconnecting)
       const readyStateSpy = vi
         .spyOn(mongoose.connection, 'readyState', 'get')
         .mockReturnValue(3 as unknown as typeof mongoose.connection.readyState);
 
-      // 2. Mock a mongoose session with transaction support
       const mockSession = {
         startTransaction: vi.fn(),
         commitTransaction: vi.fn(),
@@ -172,7 +167,6 @@ describe('User Model', () => {
 
       const startSessionSpy = vi.spyOn(mongoose, 'startSession').mockResolvedValue(mockSession);
 
-      // 3. Simulate a database transaction workflow that checks connection state
       const runTransactionWithCheck = async (session: mongoose.ClientSession) => {
         session.startTransaction();
         try {
@@ -193,13 +187,11 @@ describe('User Model', () => {
       const session = await mongoose.startSession();
       const result = await runTransactionWithCheck(session);
 
-      // 4. Assertions
       expect(result.status).toBe('aborted');
       expect(mockSession.abortTransaction).toHaveBeenCalledTimes(1);
       expect(mockSession.endSession).toHaveBeenCalledTimes(1);
       expect(mockSession.commitTransaction).not.toHaveBeenCalled();
 
-      // Cleanup
       readyStateSpy.mockRestore();
       startSessionSpy.mockRestore();
     });
