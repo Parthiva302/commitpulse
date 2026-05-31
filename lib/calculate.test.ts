@@ -796,6 +796,53 @@ describe('calculateStreak — timezone awareness', () => {
     expect(result.currentStreak).toBe(3);
   });
 
+  it('handles contributions at 23:59 and 00:01 UTC across timezone boundaries', () => {
+    // Simulate two commits that occur around the UTC midnight boundary:
+    // - One commit at 2024-07-10T23:59:00Z (falls on 2024-07-10 UTC)
+    // - Another commit at 2024-07-11T00:01:00Z (falls on 2024-07-11 UTC)
+    // The flattened calendar only stores dates; these two commits appear on
+    // consecutive dates (2024-07-10 and 2024-07-11). Depending on the
+    // caller's timezone, the local "today" may be either 2024-07-11 or
+    // still 2024-07-10 which can expose off-by-one errors.
+    const calendar = {
+      totalContributions: 2,
+      weeks: [
+        {
+          contributionDays: [
+            { contributionCount: 0, date: '2024-07-09' },
+            { contributionCount: 1, date: '2024-07-10' }, // 23:59 UTC commit
+            { contributionCount: 1, date: '2024-07-11' }, // 00:01 UTC commit
+          ],
+        },
+      ],
+    };
+
+    // Use a UTC moment shortly after the second commit.
+    const nowUTC = new Date('2024-07-11T00:01:00.000Z');
+
+    // In UTC the local date is 2024-07-11 — both days are in scope → streak=2
+    const utcResult = calculateStreak(calendar, 'UTC', nowUTC);
+    expect(utcResult.todayDate).toBe('2024-07-11');
+    expect(utcResult.currentStreak).toBe(2);
+    expect(utcResult.longestStreak).toBe(2);
+
+    // In a timezone ahead of UTC by 1 hour (Etc/GMT-1), local date is also 2024-07-11
+    // and the streak remains 2 (no split occurs).
+    const aheadResult = calculateStreak(calendar, 'Etc/GMT-1', nowUTC);
+    expect(aheadResult.todayDate).toBe('2024-07-11');
+    expect(aheadResult.currentStreak).toBe(2);
+    expect(aheadResult.longestStreak).toBe(2);
+
+    // In a timezone behind UTC by 1 hour (Etc/GMT+1), local date is still 2024-07-10
+    // at the same instant — only the earlier day's commit is considered "today",
+    // so currentStreak should be 1 while longestStreak across the whole calendar
+    // remains 2.
+    const behindResult = calculateStreak(calendar, 'Etc/GMT+1', nowUTC);
+    expect(behindResult.todayDate).toBe('2024-07-10');
+    expect(behindResult.currentStreak).toBe(1);
+    expect(behindResult.longestStreak).toBe(2);
+  });
+
   it('falls back to the last available day when the local date is ahead of the calendar data', () => {
     const futureNow = new Date('2024-06-16T12:00:00.000Z');
     const result = calculateStreak(tzCalendar, 'Etc/GMT-14', futureNow);
