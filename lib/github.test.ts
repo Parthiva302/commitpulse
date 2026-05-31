@@ -743,6 +743,62 @@ describe('getFullDashboardData', () => {
     expect(result.insights).toBeDefined();
   });
 
+  it('caps developerScore at 100 for extreme profile metrics', async () => {
+    const saturatedCalendar: ContributionCalendar = {
+      totalContributions: 500,
+      weeks: [
+        {
+          contributionDays: Array.from({ length: 60 }, (_, i) => {
+            const date = new Date('2025-01-01');
+            date.setDate(date.getDate() + i);
+
+            return {
+              contributionCount: 10,
+              date: date.toISOString().split('T')[0],
+            };
+          }),
+        },
+      ],
+    };
+
+    vi.mocked(fetch).mockImplementation(async (url: RequestInfo | URL) => {
+      if (typeof url === 'string' && url.includes('/users/octocat/repos')) {
+        return mockResponse([
+          { stargazers_count: 500000, language: 'TypeScript' },
+          { stargazers_count: 499999, language: 'Rust' },
+        ]);
+      }
+
+      if (typeof url === 'string' && url.includes('/users/octocat')) {
+        return mockResponse({
+          login: 'octocat',
+          name: 'The Octocat',
+          avatar_url: 'avatar.png',
+          public_repos: 9999,
+          followers: 9999,
+          following: 5,
+          created_at: '2020-01-01T00:00:00Z',
+        });
+      }
+
+      return mockResponse({
+        data: {
+          user: {
+            contributionsCollection: {
+              contributionCalendar: saturatedCalendar,
+              commitContributionsByRepository: [],
+            },
+          },
+        },
+      });
+    });
+
+    const result = await getFullDashboardData('octocat');
+
+    expect(result.profile.developerScore).toBeLessThanOrEqual(100);
+    expect(result.profile.developerScore).toBe(100);
+  });
+
   it('maps contribution counts to correct intensity levels', async () => {
     const intensityCalendar: ContributionCalendar = {
       totalContributions: 30,
