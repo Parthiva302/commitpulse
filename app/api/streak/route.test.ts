@@ -149,7 +149,21 @@ describe('GET /api/streak', () => {
       expect(response.status).toBe(400);
       const body = await response.json();
       expect(body.error).toBe('Invalid parameters');
-      expect(body.details).not.toBeNull();
+    });
+
+    it('returns 400 Bad Request when ?layout= is set to an unsupported format (Variation 4)', async () => {
+      const response = await GET(
+        makeRequest({
+          user: 'octocat',
+          layout: 'unsupported_layout',
+        })
+      );
+
+      expect(response.status).toBe(400);
+      const body = await response.json();
+      expect(body.details.fieldErrors.layout[0]).toContain(
+        'Invalid layout format. Supported values: default, compact, full.'
+      );
     });
 
     it('returns 400 when the user parameter is missing', async () => {
