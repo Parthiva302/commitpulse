@@ -836,7 +836,13 @@ export default function LandingPage() {
                         </div>
                       </div>
                       {userDetailsLoading ? (
-                        <div className="h-8 w-20 bg-white/5 animate-pulse rounded-lg mt-1" />
+                        <div className="h-8 w-20 shimmer rounded-lg mt-1" />
+                      ) : userDetailsError && previewUsername ? (
+                        <div className="mt-1">
+                          <span className="text-[11px] text-red-400/80 font-medium leading-tight block">
+                            Unable to load stats
+                          </span>
+                        </div>
                       ) : (
                         <div className="text-2xl font-bold bg-gradient-to-br from-white to-zinc-400 bg-clip-text text-transparent flex items-baseline gap-1 mt-1 font-mono">
                           <CountUp value={item.value} />
