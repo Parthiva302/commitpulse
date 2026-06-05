@@ -427,7 +427,7 @@ export default function LandingPage() {
     setTimeout(() => {
       guideRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 80);
-    setTimeout(() => setCopied(false), 50000);
+    setTimeout(() => setCopied(false), 3000);
   };
 
   const selectDemoUser = (name: string) => {

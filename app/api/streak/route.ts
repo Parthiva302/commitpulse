@@ -1,5 +1,6 @@
 // app/api/streak/route.ts
 
+import crypto from 'crypto';
 import { NextResponse } from 'next/server';
 import { fetchGitHubContributions, getOrgDashboardData } from '@/lib/github';
 import { calculateStreak, calculateMonthlyStats, aggregateCalendars } from '@/lib/calculate';
@@ -326,23 +327,38 @@ export async function GET(request: Request) {
         ? 'no-cache, no-store, must-revalidate'
         : `public, s-maxage=${secondsToMidnight}, stale-while-revalidate=86400`;
 
-      return NextResponse.json(
-        {
-          user: targetEntity,
-          stats,
-          monthlyStats,
-          calendar: {
-            totalContributions: calendar.totalContributions,
-            weeks: calendar.weeks,
-          },
+      const jsonPayload = JSON.stringify({
+        user: targetEntity,
+        stats,
+        monthlyStats,
+        calendar: {
+          totalContributions: calendar.totalContributions,
+          weeks: calendar.weeks,
         },
-        {
+      });
+
+      const etag = crypto.createHash('sha1').update(jsonPayload).digest('hex');
+      const weakEtag = `W/"${etag}"`;
+      const ifNoneMatch = request.headers.get('if-none-match');
+
+      if (ifNoneMatch === weakEtag || ifNoneMatch === `"${etag}"`) {
+        return new NextResponse(null, {
+          status: 304,
           headers: {
             'Cache-Control': cacheControl,
-            'X-Cache-Status': refresh ? `BYPASS, fetched=${new Date().toISOString()}` : 'HIT',
+            ETag: weakEtag,
           },
-        }
-      );
+        });
+      }
+
+      return new NextResponse(jsonPayload, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': cacheControl,
+          ETag: weakEtag,
+          'X-Cache-Status': refresh ? `BYPASS, fetched=${new Date().toISOString()}` : 'HIT',
+        },
+      });
     }
 
     // ─── SVG output mode (default) ──────────────────────────────────────────
@@ -380,11 +396,26 @@ export async function GET(request: Request) {
         ? 'public, s-maxage=31536000, immutable'
         : `public, s-maxage=${secondsToMidnight}, stale-while-revalidate=86400`;
 
+    const etag = crypto.createHash('sha1').update(svg).digest('hex');
+    const weakEtag = `W/"${etag}"`;
+    const ifNoneMatch = request.headers.get('if-none-match');
+
+    if (ifNoneMatch === weakEtag || ifNoneMatch === `"${etag}"`) {
+      return new NextResponse(null, {
+        status: 304,
+        headers: {
+          'Cache-Control': cacheControl,
+          ETag: weakEtag,
+        },
+      });
+    }
+
     return new NextResponse(svg, {
       headers: {
         'Content-Type': 'image/svg+xml',
         'Cache-Control': cacheControl,
         'Content-Security-Policy': SVG_CSP_HEADER,
+        ETag: weakEtag,
         'X-Cache-Status': refresh ? `BYPASS, fetched=${new Date().toISOString()}` : 'HIT',
       },
     });
