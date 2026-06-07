@@ -1,6 +1,6 @@
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
 import { NextRequest, NextResponse } from 'next/server';
-import { middleware as proxy, config } from './middleware';
+import { proxy, config } from './proxy';
 import { rateLimit } from '@/lib/rate-limit';
 
 vi.mock('@/lib/rate-limit', () => ({
@@ -388,14 +388,14 @@ describe('proxy', () => {
 
 describe('middleware.ts wiring', () => {
   it('middleware.ts exports a function named middleware', async () => {
-    const mod = await import('./middleware');
+    const mod = await import('./proxy');
 
     // Next.js looks for a named export called `middleware`
-    expect(typeof mod.middleware).toBe('function');
+    expect(typeof mod.proxy).toBe('function');
   });
 
   it('middleware.ts exports config with a non-empty matcher array', async () => {
-    const mod = await import('./middleware');
+    const mod = await import('./proxy');
 
     expect(mod.config).toBeDefined();
     expect(Array.isArray(mod.config.matcher)).toBe(true);
@@ -403,7 +403,7 @@ describe('middleware.ts wiring', () => {
   });
 
   it('middleware covers all expected API routes', async () => {
-    const { config: mwConfig } = await import('./middleware');
+    const { config: mwConfig } = await import('./proxy');
     const expected = [
       '/api/streak/:path*',
       '/api/github/:path*',

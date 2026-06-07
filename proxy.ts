@@ -6,12 +6,12 @@ import { getClientIp } from './utils/getClientIp';
 /**
  * Next.js middleware — rate-limits all matched API routes.
  *
- * Next.js requires this file to be named `middleware.ts` at the project root
- * and to export a function named `middleware` (and optionally `config`).
+ * Next.js requires this file to be named `proxy.ts` at the project root
+ * and to export a function named `proxy` (and optionally `config`).
  *
  * @see https://nextjs.org/docs/app/building-your-application/routing/middleware
  */
-export async function middleware(request: NextRequest): Promise<NextResponse> {
+export async function proxy(request: NextRequest): Promise<NextResponse> {
   const ip = getClientIp(request);
 
   const isRefresh =
