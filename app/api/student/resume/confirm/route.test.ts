@@ -69,7 +69,6 @@ describe('POST /api/student/resume/confirm Extra Scenarios', () => {
   });
 
   it('returns 200 and bypasses database update when MONGODB_URI is not configured', async () => {
-    // Process.env.MONGODB_URI is undefined by default in beforeEach
     const response = await POST(
       makeRequest({
         githubUsername: 'testuser',
@@ -102,7 +101,7 @@ describe('POST /api/student/resume/confirm Extra Scenarios', () => {
     );
     expect(response.status).toBe(200);
   });
-    it('returns 400 when githubUsername is missing', async () => {
+  it('returns 400 when githubUsername is missing', async () => {
     const response = await POST(
       makeRequest({
         data: { name: 'John Doe', email: 'john@example.com' },
