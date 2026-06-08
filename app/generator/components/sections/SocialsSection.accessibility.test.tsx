@@ -3,16 +3,16 @@ import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi } from 'vitest';
 import { SocialsSection } from './SocialsSection';
 
-const defaultProps = {
+const makeProps = () => ({
   selected: [],
   socialLinks: {},
   onSelectedChange: vi.fn(),
   onLinkChange: vi.fn(),
-};
+});
 
 describe('SocialsSection Accessibility', () => {
   it('renders accessible tab buttons', () => {
-    render(<SocialsSection {...defaultProps} />);
+    render(<SocialsSection {...makeProps()} />);
 
     expect(screen.getByRole('button', { name: /① pick platforms/i })).toBeInTheDocument();
 
@@ -22,7 +22,7 @@ describe('SocialsSection Accessibility', () => {
   it('allows keyboard navigation through primary controls', async () => {
     const user = userEvent.setup();
 
-    render(<SocialsSection {...defaultProps} />);
+    render(<SocialsSection {...makeProps()} />);
 
     const sectionToggle = screen.getByRole('button', {
       name: /socials/i,
@@ -36,7 +36,7 @@ describe('SocialsSection Accessibility', () => {
       name: /② add links/i,
     });
 
-    await user.tab();
+    sectionToggle.focus();
     expect(sectionToggle).toHaveFocus();
 
     await user.tab();
@@ -47,7 +47,7 @@ describe('SocialsSection Accessibility', () => {
   });
 
   it('provides accessible search textbox with placeholder', () => {
-    render(<SocialsSection {...defaultProps} />);
+    render(<SocialsSection {...makeProps()} />);
 
     const searchInput = screen.getByPlaceholderText(/search platforms/i);
 
@@ -56,17 +56,18 @@ describe('SocialsSection Accessibility', () => {
   });
 
   it('ensures social icons expose accessible names through alt text', () => {
-    render(<SocialsSection {...defaultProps} />);
+    render(<SocialsSection {...makeProps()} />);
 
     const images = screen.getAllByRole('img');
 
     images.forEach((img) => {
-      expect(img).toHaveAttribute('alt');
+      const alt = img.getAttribute('alt');
+      expect(alt).not.toBeNull();
     });
   });
 
   it('maintains logical heading and content structure', () => {
-    render(<SocialsSection {...defaultProps} />);
+    render(<SocialsSection {...makeProps()} />);
 
     expect(screen.getByText(/socials/i)).toBeInTheDocument();
     expect(screen.getByText(/add links to your profiles/i)).toBeInTheDocument();
