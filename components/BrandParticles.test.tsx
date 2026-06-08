@@ -6,6 +6,7 @@ import BrandParticles from './BrandParticles';
 
 let mockReducedMotion = false;
 
+// 1. Declare the type interfaces first
 interface MotionDivProps extends React.HTMLAttributes<HTMLDivElement> {
   animate?: unknown;
   transition?: unknown;
@@ -26,11 +27,12 @@ const ForwardedMotionDiv = React.forwardRef<HTMLDivElement, MotionDivProps>(
 
 ForwardedMotionDiv.displayName = 'MotionDiv';
 
+// 2. Define the mock object BEFORE calling vi.mock()
 const mockMotion = {
   div: ForwardedMotionDiv,
 };
 
-// Completely type-safe framer-motion mock block
+// 3. Now the hoisted mock factory function can safely read mockMotion
 vi.mock('framer-motion', () => ({
   motion: mockMotion,
   useReducedMotion: () => mockReducedMotion,
