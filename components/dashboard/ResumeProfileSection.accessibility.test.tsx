@@ -92,7 +92,6 @@ vi.mock('./ResumePreviewForm', () => ({
 // ---------------------------------------------------------------------------
 // Accessibility test suite
 // ---------------------------------------------------------------------------
-
 describe('ResumeProfileSection – accessibility', () => {
   /**
    * Test 1 — ARIA Label / Accessibility Name Validation
@@ -112,7 +111,7 @@ describe('ResumeProfileSection – accessibility', () => {
 
     // Advance to the "uploaded" stage so preview-form buttons are rendered.
     const user = userEvent.setup();
-    await userEvent.click(uploadButton);
+    await user.click(uploadButton);
 
     const backButton = screen.getByRole('button', { name: /back/i });
     const saveButton = screen.getByRole('button', { name: /save profile/i });
@@ -132,9 +131,11 @@ describe('ResumeProfileSection – accessibility', () => {
     const user = userEvent.setup();
     render(<ResumeProfileSection githubUsername="janesmith" />);
 
+    const uploadButton = screen.getByRole('button', { name: /upload resume file/i });
+
     // Tab once – focus should land on the upload button.
     await user.tab();
-    expect(document.activeElement).toHaveAccessibleName(/upload resume file/i);
+    expect(document.activeElement).toBe(uploadButton);
 
     // Activate it to advance to the preview stage.
     await user.click(uploadButton);
@@ -166,6 +167,7 @@ describe('ResumeProfileSection – accessibility', () => {
    * screen-reader announcements.
    */
   it('does not contain broken aria-describedby references that would confuse screen readers', async () => {
+    const user = userEvent.setup();
     const { container } = render(<ResumeProfileSection githubUsername="janesmith" />);
 
     const elementsWithDescribedBy = container.querySelectorAll('[aria-describedby]');
@@ -181,12 +183,9 @@ describe('ResumeProfileSection – accessibility', () => {
 
     // Also advance to the uploaded stage and repeat the check.
     const uploadButton = screen.getByRole('button', { name: /upload resume file/i });
-    await userEvent.click(uploadButton);
+    await user.click(uploadButton);
 
-    const { container: updatedContainer } = render(
-      <ResumeProfileSection githubUsername="janesmith" />
-    );
-    const elementsAfterUpload = updatedContainer.querySelectorAll('[aria-describedby]');
+    const elementsAfterUpload = container.querySelectorAll('[aria-describedby]');
     elementsAfterUpload.forEach((el) => {
       const ids = el.getAttribute('aria-describedby')!.split(/\s+/).filter(Boolean);
       ids.forEach((id) => {
@@ -205,14 +204,12 @@ describe('ResumeProfileSection – accessibility', () => {
    * no heading level should be skipped within the component's rendered subtree.
    */
   it('maintains a logical heading hierarchy without skipping levels', async () => {
+    const user = userEvent.setup();
     render(<ResumeProfileSection githubUsername="janesmith" />);
 
     // Idle stage: exactly one heading rendered by this component.
     const idleHeadings = screen.getAllByRole('heading');
     expect(idleHeadings.length).toBeGreaterThanOrEqual(1);
-
-    // The visible section label heading must be present.
-    expect(screen.getAllByRole('heading').length).toBeGreaterThan(0);
 
     // Validate that heading levels in the rendered DOM don't skip (e.g. h1→h3).
     const headingLevels = idleHeadings
@@ -226,7 +223,8 @@ describe('ResumeProfileSection – accessibility', () => {
     }
 
     // Advance to uploaded stage and re-check.
-    await userEvent.click(screen.getByRole('button', { name: /upload resume file/i }));
+    const uploadButton = screen.getByRole('button', { name: /upload resume file/i });
+    await user.click(uploadButton);
 
     const previewHeadings = screen.getAllByRole('heading');
     expect(screen.getByRole('heading', { name: /review parsed data/i })).toBeInTheDocument();

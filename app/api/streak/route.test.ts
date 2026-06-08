@@ -962,6 +962,17 @@ describe('GET /api/streak', () => {
       expect(body.details.fieldErrors.tz[0]).toContain('Invalid timezone');
     });
 
+    it('rejects a path-traversal ?tz= payload before it reaches the GitHub API or TTL logic', async () => {
+      const response = await GET(makeRequest({ user: 'octocat', tz: '../../../../etc/passwd' }));
+
+      expect(response.status).toBe(400);
+      const body = await response.json();
+      expect(body.error).toBe('Invalid parameters');
+      expect(body.details.fieldErrors.tz[0]).toBe('Invalid timezone');
+      expect(fetchGitHubContributions).not.toHaveBeenCalled();
+      expect(getSecondsUntilMidnightInTimezone).not.toHaveBeenCalled();
+    });
+
     it('returns 400 (not 500) when Intl.DateTimeFormat throws RangeError at runtime', async () => {
       // Test that a RangeError from Intl.DateTimeFormat is caught and returned as 400.
       // We save/restore the original to avoid cross-test pollution.

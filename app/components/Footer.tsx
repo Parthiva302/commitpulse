@@ -173,7 +173,6 @@ export function Footer() {
             <h3 className="font-semibold text-sm text-black dark:text-white mb-3">
               {t('footer.connect')}
             </h3>
-
             <div className="flex flex-col gap-2">
               {socialLinks.map((link) => (
                 <LinkComponent

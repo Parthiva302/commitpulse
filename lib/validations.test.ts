@@ -539,6 +539,27 @@ describe('streakParamsSchema', () => {
       expect(result.error.issues[0]?.message).toBe('Invalid timezone');
     }
   });
+
+  it('rejects path-traversal and injection ?tz= payloads while accepting a real IANA zone', () => {
+    const maliciousZones = [
+      '../../../../etc/passwd',
+      'America/New_York; rm -rf /',
+      'America/New_York ',
+    ];
+
+    for (const tz of maliciousZones) {
+      const result = streakParamsSchema.safeParse({ user: 'octocat', tz });
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues[0]?.message).toBe('Invalid timezone');
+      }
+    }
+
+    expect(streakParamsSchema.safeParse({ user: 'octocat', tz: 'America/New_York' }).success).toBe(
+      true
+    );
+  });
 });
 
 describe('streakParamsSchema — user hyphen validation', () => {
