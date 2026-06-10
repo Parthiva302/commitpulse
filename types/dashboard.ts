@@ -119,3 +119,10 @@ export interface Repository {
     color: string;
   } | null;
 }
+
+export interface RepoActivityInfo {
+  name: string;
+  url: string;
+  pushedAt: string | null;
+  isPrivate: boolean;
+}

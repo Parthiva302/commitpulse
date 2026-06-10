@@ -20,6 +20,8 @@ interface GitHubRepo {
   fork?: boolean;
   forks_count?: number;
   updated_at?: string;
+  pushed_at?: string;
+  private?: boolean;
   owner?: { login: string };
   created_at?: string;
 }
@@ -479,6 +481,8 @@ function sanitizeRepo(repo: GitHubRepo): GitHubRepo {
     fork: repo.fork,
     forks_count: repo.forks_count,
     updated_at: repo.updated_at,
+    pushed_at: repo.pushed_at,
+    private: repo.private,
     created_at: repo.created_at,
   };
 }
@@ -1789,6 +1793,12 @@ export async function getFullDashboardData(username: string, options: FetchOptio
     hallOfFame: finalHallOfFame,
     graphData: { nodes, links },
     lastSyncedAt: calendarData.lastSyncedAt,
+    allRepos: reposData.map((r) => ({
+      name: r.name,
+      url: `https://github.com/${r.owner?.login || profileData.login}/${r.name}`,
+      pushedAt: r.pushed_at ?? r.updated_at ?? null,
+      isPrivate: r.private ?? false,
+    })),
   };
 }
 
