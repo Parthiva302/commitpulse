@@ -1971,7 +1971,8 @@ export function generateNotFoundSVG(
   radius: number,
   speed: string = '8s'
 ): string {
-  const safeName = escapeXML(username.toUpperCase());
+  const sanitizedUsername = username.replace(/[^a-zA-Z0-9\-]/g, '').slice(0, 39) || 'unknown';
+  const safeName = escapeXML(sanitizedUsername.toUpperCase());
   const ghostTowersHtml = renderGhostTowers(GHOST_LAYOUT, accent);
 
   const safeId = safeName.replace(/[^a-zA-Z0-9-]/g, '_').toLowerCase();
@@ -2429,7 +2430,7 @@ export function generatePulseSVG(
   </style>
 
   <defs>
-    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
       <feGaussianBlur stdDeviation="4" result="blur" />
       <feMerge>
         <feMergeNode in="blur" />
@@ -2617,7 +2618,7 @@ function generateAutoThemePulseSVG(
   </style>
 
   <defs>
-    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
       <feGaussianBlur stdDeviation="4" result="blur" />
       <feMerge>
         <feMergeNode in="blur" />
