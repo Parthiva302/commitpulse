@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { timingSafeEqual } from 'crypto';
 import { setAlertConfig } from '@/services/github/webhook-handler';
 
 export const runtime = 'nodejs';
@@ -24,7 +25,11 @@ function verifyAuthToken(request: NextRequest): boolean {
     return false;
   }
 
-  return token === expectedToken;
+  try {
+    return timingSafeEqual(Buffer.from(token), Buffer.from(expectedToken));
+  } catch {
+    return false;
+  }
 }
 
 export async function POST(request: NextRequest) {
