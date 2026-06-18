@@ -378,6 +378,7 @@ const baseStreakParamsSchema = z.object({
       'radar',
       'doughnut',
       'pie',
+      'commit_clock',
     ])
     .catch('default')
     .default('default'),

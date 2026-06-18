@@ -2300,6 +2300,68 @@ export async function getWrappedData(
   };
 }
 
+/**
+ * Fetches real commit timestamps from a user's top contributed repos
+ * and aggregates them into a 24-element array (index = hour 0–23, UTC).
+ * Uses up to `maxRepos` repos to stay within rate limits.
+ */
+export async function fetchCommitHourDistribution(
+  username: string,
+  repoNames: string[],
+  options: FetchOptions = {}
+): Promise<number[]> {
+  const hourCounts = new Array<number>(24).fill(0);
+  const maxRepos = Math.min(repoNames.length, 5);
+  const targets = repoNames.slice(0, maxRepos);
+
+  await runCappedConcurrency(targets, 3, async (repo) => {
+    const query = `
+      query($owner: String!, $repo: String!) {
+        repository(owner: $owner, name: $repo) {
+          defaultBranchRef {
+            target {
+              ... on Commit {
+                history(first: 100) {
+                  nodes {
+                    committedDate
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    `;
+    try {
+      const res = await fetchGraphQLWithRetry(
+        GITHUB_GRAPHQL_URL,
+        {
+          method: 'POST',
+          headers: getHeaders(options.token),
+          body: JSON.stringify({ query, variables: { owner: username, repo } }),
+          cache: 'no-store',
+          signal: options.signal,
+        },
+        0,
+        undefined,
+        options.token
+      );
+      if (!res.ok) return;
+      const data = await res.json();
+      const nodes: { committedDate: string }[] =
+        data?.data?.repository?.defaultBranchRef?.target?.history?.nodes ?? [];
+      for (const { committedDate } of nodes) {
+        const hour = new Date(committedDate).getUTCHours();
+        hourCounts[hour]++;
+      }
+    } catch {
+      // silently skip repos that fail
+    }
+  });
+
+  return hourCounts;
+}
+
 export async function runCappedConcurrency<T, R>(
   items: T[],
   limit: number,

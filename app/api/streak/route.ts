@@ -2,7 +2,12 @@
 
 import crypto from 'crypto';
 import { NextResponse } from 'next/server';
-import { fetchGitHubContributions, getOrgDashboardData, getCircuitTelemetry } from '@/lib/github';
+import {
+  fetchGitHubContributions,
+  getOrgDashboardData,
+  getCircuitTelemetry,
+  fetchCommitHourDistribution,
+} from '@/lib/github';
 import {
   calculateStreak,
   calculateMonthlyStats,
@@ -24,6 +29,7 @@ import {
 import { generateConstellationSVG } from '@/lib/svg/constellation';
 import { generateRadarSVG } from '@/lib/svg/radar';
 import { generateDoughnutSVG } from '@/lib/svg/doughnut';
+import { generateCommitClockSVG } from '@/lib/svg/commitClock';
 import { getSecondsUntilUTCMidnight, getSecondsUntilMidnightInTimezone } from '@/utils/time';
 import type { BadgeParams, RepoContribution, ExtendedContributionData } from '@/types';
 import { themes } from '@/lib/svg/themes';
@@ -170,7 +176,8 @@ export async function GET(request: Request) {
       | 'constellation'
       | 'radar'
       | 'doughnut'
-      | 'pie';
+      | 'pie'
+      | 'commit_clock';
     const themeName = theme || 'dark';
 
     const ip = getClientIp(request);
@@ -384,7 +391,10 @@ export async function GET(request: Request) {
         to,
       });
       calendar = orgData.calendar;
-      repoContributions = normalizedView === 'languages' ? orgData.repoContributions || [] : [];
+      repoContributions =
+        normalizedView === 'languages' || normalizedView === 'commit_clock'
+          ? orgData.repoContributions || []
+          : [];
     } else if (user.includes(',')) {
       const users = user
         .split(',')
@@ -424,7 +434,7 @@ export async function GET(request: Request) {
       }
       calendar = aggregateCalendars(successfulData.map((d) => d.calendar));
       repoContributions =
-        normalizedView === 'languages'
+        normalizedView === 'languages' || normalizedView === 'commit_clock'
           ? successfulData.flatMap((d) => d.repoContributions || [])
           : [];
       if (hasOfflineFallback) {
@@ -437,7 +447,10 @@ export async function GET(request: Request) {
         to,
       });
       calendar = userData.calendar;
-      repoContributions = normalizedView === 'languages' ? userData.repoContributions || [] : [];
+      repoContributions =
+        normalizedView === 'languages' || normalizedView === 'commit_clock'
+          ? userData.repoContributions || []
+          : [];
       if (userData.isOfflineFallback) {
         params.isOfflineFallback = true;
       }
@@ -555,6 +568,17 @@ export async function GET(request: Request) {
     } else if (normalizedView === 'doughnut' || normalizedView === 'pie') {
       const stats = calculateStreak(calendar, timezone, undefined, grace);
       svg = generateDoughnutSVG(stats, params, calendar);
+    } else if (normalizedView === 'commit_clock') {
+      const stats = calculateStreak(calendar, timezone, undefined, grace);
+      const topRepoNames = repoContributions
+        .sort((a, b) => b.contributions.totalCount - a.contributions.totalCount)
+        .slice(0, 5)
+        .map((r) => r.repository.name);
+      const hourCounts = await fetchCommitHourDistribution(user, topRepoNames, {
+        bypassCache: shouldBypassCache,
+        signal: undefined,
+      });
+      svg = generateCommitClockSVG(hourCounts, stats, params);
     } else if (versus && versusCalendar) {
       // Normalize both calendars to the target timezone for accurate comparison
       const normalizedCalendar = normalizeCalendarToTimezone(calendar, timezone);
