@@ -5,7 +5,7 @@ import { validateGitHubUsername } from '@/lib/validations';
 import { RateLimiter } from '@/lib/rate-limit';
 import { getClientIp } from '@/utils/getClientIp';
 
-const ciAnalyticsLimiter = new RateLimiter(10, 60_000, 1);
+const ciAnalyticsLimiter = new RateLimiter(10, 60_000, 10_000);
 
 export async function GET(request: Request) {
   const ip = getClientIp(request);
