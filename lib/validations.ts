@@ -815,7 +815,16 @@ export const notifyPostSchema = z.object({
       notifyOnStreak: true,
       notifyOnMilestone: true,
     }),
-  managementToken: z.string().trim().min(16).max(256).optional(),
+  managementToken: z
+    .string()
+    .trim()
+    .min(16)
+    .max(256)
+    .regex(
+      /^cpn_[A-Za-z0-9_-]+$/,
+      'Invalid management token format — must start with "cpn_" and be base64url-encoded'
+    )
+    .optional(),
 });
 
 export const notifyGetSchema = z.object({
