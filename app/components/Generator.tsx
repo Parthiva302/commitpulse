@@ -11,16 +11,24 @@ export default function Generator() {
   const [username, setUsername] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [badge, setBadge] = useState<any>(null);
+  const [badge, setBadge] = useState<Record<string, unknown> | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
-  const [suggestion, setSuggestion] = useState<any>(null);
+  const [suggestion, setSuggestion] = useState<Record<string, unknown> | null>(null);
 
   // ===== LOAD RECENT SEARCHES FROM LOCALSTORAGE =====
   useEffect(() => {
     const saved = localStorage.getItem('commitpulse_recent');
     if (saved) {
-      setRecentSearches(JSON.parse(saved));
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          // eslint-disable-next-line react-hooks/set-state-in-effect
+          setRecentSearches(parsed);
+        }
+      } catch {
+        // ignore parse error
+      }
     }
   }, []);
 
@@ -100,23 +108,17 @@ export default function Generator() {
     setShowDropdown(false);
 
     try {
-      const response = await fetch(
-        `/api/streak?user=${encodeURIComponent(nameToSearch)}`
-      );
+      const response = await fetch(`/api/streak?user=${encodeURIComponent(nameToSearch)}`);
 
       if (!response.ok) {
         if (response.status === 404) {
           throw new Error('❌ User not found on GitHub');
         }
         if (response.status === 429) {
-          throw new Error(
-            '⏳ GitHub API rate limit exceeded. Please wait a few minutes.'
-          );
+          throw new Error('⏳ GitHub API rate limit exceeded. Please wait a few minutes.');
         }
         if (response.status >= 500) {
-          throw new Error(
-            '⚠️ GitHub API is temporarily unavailable. Try again later.'
-          );
+          throw new Error('⚠️ GitHub API is temporarily unavailable. Try again later.');
         }
         throw new Error('Failed to generate badge');
       }
@@ -130,36 +132,36 @@ export default function Generator() {
       // Also try to get the stats to fill out the stats section if possible
       let stats = null;
       try {
-         const statsResponse = await fetch(`/api/streak?user=${encodeURIComponent(nameToSearch)}&format=json`);
-         if (statsResponse.ok) {
-            const statsData = await statsResponse.json();
-            if (statsData.stats) {
-               stats = {
-                 streak: statsData.stats.currentStreak || 0,
-                 contributions: statsData.stats.totalContributions || 0,
-                 repos: 0 // The stats API doesn't return total repos directly here
-               };
-            }
-         }
+        const statsResponse = await fetch(
+          `/api/streak?user=${encodeURIComponent(nameToSearch)}&format=json`
+        );
+        if (statsResponse.ok) {
+          const statsData = await statsResponse.json();
+          if (statsData.stats) {
+            stats = {
+              streak: statsData.stats.currentStreak || 0,
+              contributions: statsData.stats.totalContributions || 0,
+              repos: 0, // The stats API doesn't return total repos directly here
+            };
+          }
+        }
       } catch (e) {
-         // ignore stats fetch error
+        // ignore stats fetch error
       }
 
       setBadge({
-         svg: svgText,
-         cacheStatus: response.headers.get('X-Cache-Status'),
-         stats: stats
+        svg: svgText,
+        cacheStatus: response.headers.get('X-Cache-Status'),
+        stats: stats,
       });
       setUsername(nameToSearch);
       saveToRecent(nameToSearch);
       toast.success('✅ Badge generated successfully!');
-
-    } catch (err: any) {
-      const errorMsg = err.message || 'Something went wrong';
+    } catch (err: unknown) {
+      const errorMsg = err instanceof Error ? err.message : 'Something went wrong';
       setError(errorMsg);
       toast.error(errorMsg);
       console.error('Badge generation error:', err);
-
     } finally {
       setIsLoading(false);
     }
@@ -245,9 +247,7 @@ export default function Generator() {
             >
               <div className={styles.suggestionContent}>
                 <div className={styles.suggestionName}>{suggestion.login}</div>
-                <div className={styles.suggestionHandle}>
-                  @{suggestion.login}
-                </div>
+                <div className={styles.suggestionHandle}>@{suggestion.login}</div>
               </div>
               {suggestion.verified && (
                 <span className={styles.verifiedBadge}>✓ Verified Profile</span>
@@ -286,9 +286,7 @@ export default function Generator() {
                         </button>
                         <button
                           onClick={() =>
-                            setRecentSearches((prev) =>
-                              prev.filter((item) => item !== name)
-                            )
+                            setRecentSearches((prev) => prev.filter((item) => item !== name))
                           }
                           className={styles.removeBtn}
                         >
@@ -297,10 +295,7 @@ export default function Generator() {
                       </div>
                     ))}
                     {recentSearches.length > 0 && (
-                      <button
-                        onClick={clearRecent}
-                        className={styles.clearAllBtn}
-                      >
+                      <button onClick={clearRecent} className={styles.clearAllBtn}>
                         Clear
                       </button>
                     )}
@@ -325,13 +320,8 @@ export default function Generator() {
       {badge && !isLoading && (
         <div className={styles.previewSection}>
           <div className={styles.previewContainer}>
-            <div 
-              className={styles.badgePreview}
-              dangerouslySetInnerHTML={{ __html: badge.svg }} 
-            />
-            {badge.cacheStatus && (
-              <span className={styles.cacheStatus}>[{badge.cacheStatus}]</span>
-            )}
+            <div className={styles.badgePreview} dangerouslySetInnerHTML={{ __html: badge.svg }} />
+            {badge.cacheStatus && <span className={styles.cacheStatus}>[{badge.cacheStatus}]</span>}
           </div>
 
           <div className={styles.copySection}>
@@ -359,9 +349,7 @@ export default function Generator() {
                 <div className={styles.statLabel}>Current Streak</div>
               </div>
               <div className={styles.stat}>
-                <div className={styles.statValue}>
-                  {badge.stats.contributions}
-                </div>
+                <div className={styles.statValue}>{badge.stats.contributions}</div>
                 <div className={styles.statLabel}>Contributions</div>
               </div>
               <div className={styles.stat}>

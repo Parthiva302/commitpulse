@@ -581,20 +581,24 @@ export default function LandingPageClient() {
       setIsGenerating(true);
 
       try {
-        const response = await fetch(`/api/streak?user=${encodeURIComponent(trimmedUsername)}&format=json`);
+        const response = await fetch(
+          `/api/streak?user=${encodeURIComponent(trimmedUsername)}&format=json`
+        );
 
         if (!response.ok) {
           if (response.status === 404) {
             throw new Error('❌ User not found. Please check the username and try again.');
           } else if (response.status === 429) {
-            throw new Error('⏳ GitHub API rate limit exceeded. Please wait a few minutes and try again.');
+            throw new Error(
+              '⏳ GitHub API rate limit exceeded. Please wait a few minutes and try again.'
+            );
           } else if (response.status >= 500) {
             throw new Error('⚠️ Failed to fetch user data. Please try again later.');
           } else {
             throw new Error(`⚠️ Something went wrong. Please try again.`);
           }
         }
-        
+
         // Success
         setInstantUsername(trimmedUsername);
         setBadgeResult(null);
@@ -608,7 +612,9 @@ export default function LandingPageClient() {
         } else if (err instanceof Error && err.message.includes('timeout')) {
           toast.error('⏳ Request timeout. Please try again.');
         } else {
-          toast.error(err instanceof Error ? err.message : '⚠️ Something went wrong. Please try again.');
+          toast.error(
+            err instanceof Error ? err.message : '⚠️ Something went wrong. Please try again.'
+          );
         }
       } finally {
         setIsGenerating(false);
