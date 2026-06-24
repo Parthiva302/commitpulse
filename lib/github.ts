@@ -50,8 +50,6 @@ export function shouldFallbackOnError(err: unknown): boolean {
     msg.includes('Not Found') ||
     msg.includes('401') ||
     msg.includes('Unauthorized') ||
-    msg.includes('token') ||
-    msg.includes('PAT') ||
     msg.includes('Authorization') ||
     msg.includes('status 500') ||
     msg.includes('error: 500') ||
@@ -68,6 +66,8 @@ export function shouldFallbackOnError(err: unknown): boolean {
     msg.includes('rate limit') ||
     msg.includes('RATE_LIMITED') ||
     msg.includes('Rate Limit') ||
+    msg.includes('token') ||
+    msg.includes('PAT') ||
     err instanceof RateLimitError
   ) {
     return true;

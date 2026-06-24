@@ -22,7 +22,8 @@
       "@/*": ["./*"],
       "pdfjs-dist": ["./types/pdfjs-dist-mock.d.ts"],
       "pdfjs-dist/*": ["./types/pdfjs-dist-mock.d.ts"]
-    }
+    },
+    "baseUrl": "."
   },
   "include": [
     "next-env.d.ts",

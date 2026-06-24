@@ -10,6 +10,8 @@ import { Providers } from './providers';
 import AnimatedCursor from '@/components/AnimatedCursor';
 import KonamiEasterEgg from '@/components/KonamiEasterEgg';
 
+import { Toaster } from 'sonner';
+
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
@@ -122,6 +124,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <ReturnToTop />
           <KonamiEasterEgg />
           <Analytics />
+          <Toaster position="top-right" richColors />
         </Providers>
       </body>
     </html>

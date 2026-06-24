@@ -4,6 +4,7 @@ import { useTranslation } from '@/context/TranslationContext';
 import { renderHeroTitle } from './heroTitle';
 
 import Link from 'next/link';
+import { toast } from 'sonner';
 import { useRef, useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { gsap } from 'gsap';
@@ -308,6 +309,7 @@ export default function LandingPageClient() {
 
   const [username, setUsername] = useState('');
   const [instantUsername, setInstantUsername] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const [badgeResult, setBadgeResult] = useState<{
@@ -568,13 +570,51 @@ export default function LandingPageClient() {
     setBadgeResult(null);
   };
 
-  const handleGenerate = (e: React.FormEvent) => {
+  const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (trimmedUsername.length > 0) {
-      setInstantUsername(trimmedUsername);
-      setBadgeResult(null);
-      trackUser(trimmedUsername);
-      addSearch(trimmedUsername);
+      if (!validateGitHubUsername(trimmedUsername)) {
+        toast.error('⚠️ Please enter a valid GitHub username.');
+        return;
+      }
+
+      setIsGenerating(true);
+
+      try {
+        const response = await fetch(`/api/streak?user=${encodeURIComponent(trimmedUsername)}&format=json`);
+
+        if (!response.ok) {
+          if (response.status === 404) {
+            throw new Error('❌ User not found. Please check the username and try again.');
+          } else if (response.status === 429) {
+            throw new Error('⏳ GitHub API rate limit exceeded. Please wait a few minutes and try again.');
+          } else if (response.status >= 500) {
+            throw new Error('⚠️ Failed to fetch user data. Please try again later.');
+          } else {
+            throw new Error(`⚠️ Something went wrong. Please try again.`);
+          }
+        }
+        
+        // Success
+        setInstantUsername(trimmedUsername);
+        setBadgeResult(null);
+        trackUser(trimmedUsername);
+        addSearch(trimmedUsername);
+        toast.success('✅ Badge generated successfully!');
+      } catch (err) {
+        console.error('Badge generation error:', err);
+        if (err instanceof TypeError) {
+          toast.error('🌐 Network error. Please check your connection and try again.');
+        } else if (err instanceof Error && err.message.includes('timeout')) {
+          toast.error('⏳ Request timeout. Please try again.');
+        } else {
+          toast.error(err instanceof Error ? err.message : '⚠️ Something went wrong. Please try again.');
+        }
+      } finally {
+        setIsGenerating(false);
+      }
+    } else {
+      toast.error('⚠️ Please enter a valid GitHub username.');
     }
   };
 
@@ -661,8 +701,9 @@ export default function LandingPageClient() {
                     aria-label={t('landing.input_aria_label', {
                       defaultValue: 'Enter GitHub username to generate badge',
                     })}
-                    className="flex-1 rounded-2xl border border-black/10 bg-white pl-12 pr-10 py-4 text-sm text-black outline-none transition-all duration-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent dark:border-white/10 dark:bg-black/60 dark:text-white dark:placeholder:text-gray-500 shadow-inner"
+                    className="flex-1 rounded-2xl border border-black/10 bg-white pl-12 pr-10 py-4 text-sm text-black outline-none transition-all duration-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent dark:border-white/10 dark:bg-black/60 dark:text-white dark:placeholder:text-gray-500 shadow-inner disabled:opacity-60 disabled:cursor-not-allowed"
                     value={username}
+                    disabled={isGenerating}
                     onChange={(e) => {
                       let val = e.target.value;
                       if (val.includes('github.com/')) {
@@ -700,7 +741,7 @@ export default function LandingPageClient() {
                 <button
                   suppressHydrationWarning
                   type="submit"
-                  disabled={!mounted || trimmedUsername.length === 0}
+                  disabled={!mounted || trimmedUsername.length === 0 || isGenerating}
                   aria-label={t('landing.generate_badge', { defaultValue: 'Generate Badge' })}
                   className={`relative flex min-w-[180px] items-center justify-center gap-2 overflow-hidden rounded-2xl px-6 py-4 text-sm font-bold transition-all duration-300 transform cursor-pointer hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] disabled:cursor-not-allowed ${
                     mounted && trimmedUsername.length > 0
@@ -708,8 +749,17 @@ export default function LandingPageClient() {
                       : 'bg-gray-100 text-gray-400 dark:bg-white/5 dark:text-white/55'
                   }`}
                 >
-                  <Sparkles size={16} />
-                  {t('landing.generate_badge', { defaultValue: 'Generate Badge' })}
+                  {isGenerating ? (
+                    <>
+                      <Loader2 className="animate-spin" size={16} />
+                      {t('landing.generating_badge', { defaultValue: 'Generating...' })}
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles size={16} />
+                      {t('landing.generate_badge', { defaultValue: 'Generate Badge' })}
+                    </>
+                  )}
                 </button>
               </div>
 
