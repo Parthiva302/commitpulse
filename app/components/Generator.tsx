@@ -6,15 +6,31 @@ import styles from './Generator.module.css';
 
 const DEMO_USERS = ['torvalds', 'gaearon', 'vercel', 'sindresorhus'];
 
+type BadgeData = {
+  svg: string;
+  cacheStatus?: string | null;
+  stats?: {
+    streak: number;
+    contributions: number;
+    repos: number;
+  } | null;
+};
+
+type SuggestionData = {
+  login: string;
+  avatar_url: string;
+  verified: boolean;
+};
+
 export default function Generator() {
   // ===== STATE MANAGEMENT =====
   const [username, setUsername] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [badge, setBadge] = useState<Record<string, unknown> | null>(null);
+  const [badge, setBadge] = useState<BadgeData | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
-  const [suggestion, setSuggestion] = useState<Record<string, unknown> | null>(null);
+  const [suggestion, setSuggestion] = useState<SuggestionData | null>(null);
 
   // ===== LOAD RECENT SEARCHES FROM LOCALSTORAGE =====
   useEffect(() => {
