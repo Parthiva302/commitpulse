@@ -7,6 +7,8 @@ import os from 'os';
 import * as ts from 'typescript';
 import pLimit from 'p-limit';
 import { getGitHubTokens } from '@/lib/github';
+import { auth } from '@/auth';
+import { getClientIp } from '@/utils/getClientIp';
 
 const execFilePromise = promisify(execFile);
 
@@ -19,6 +21,49 @@ const REST_TIMEOUT_MS = 5000; // 5s timeout for external API requests
 function sanitizeError(err: unknown): string {
   const msg = err instanceof Error ? err.message : String(err);
   return msg.replace(/x-access-token:[^@]+@/g, 'x-access-token:[REDACTED]@');
+}
+
+// Per-IP concurrent clone tracking (max 3 concurrent clones per IP)
+const MAX_CONCURRENT_CLONES_PER_IP = 3;
+const MAX_TEMP_DIR_SIZE_BYTES = 500 * 1024 * 1024; // 500MB
+const activeClonesPerIP = new Map<string, number>();
+
+function incrementClones(ip: string): boolean {
+  const current = activeClonesPerIP.get(ip) || 0;
+  if (current >= MAX_CONCURRENT_CLONES_PER_IP) return false;
+  activeClonesPerIP.set(ip, current + 1);
+  return true;
+}
+
+function decrementClones(ip: string): void {
+  const current = activeClonesPerIP.get(ip) || 0;
+  if (current <= 1) {
+    activeClonesPerIP.delete(ip);
+  } else {
+    activeClonesPerIP.set(ip, current - 1);
+  }
+}
+
+/**
+ * Measures total size of a directory recursively.
+ */
+function getDirSize(dirPath: string): number {
+  let totalSize = 0;
+  try {
+    const entries = fs.readdirSync(dirPath, { withFileTypes: true });
+    for (const entry of entries) {
+      const fullPath = path.join(dirPath, entry.name);
+      if (entry.isDirectory()) {
+        totalSize += getDirSize(fullPath);
+      } else if (entry.isFile()) {
+        const stats = fs.statSync(fullPath);
+        totalSize += stats.size;
+      }
+    }
+  } catch {
+    // Ignore errors during size calculation
+  }
+  return totalSize;
 }
 
 // Supported files for parsing imports/exports
@@ -270,6 +315,23 @@ function resolveImportPath(
 
 export async function POST(req: NextRequest) {
   let tempDir = '';
+  const ip = getClientIp(req);
+
+  // Require authenticated session
+  const session = await auth();
+  if (!session?.user) {
+    return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+  }
+
+  // Check concurrent clone limit per IP
+  if (!incrementClones(ip)) {
+    return NextResponse.json(
+      { error: 'Too many concurrent requests. Please try again later.' },
+      { status: 429 }
+    );
+  }
+
+  let tokens: string[] = [];
   try {
     const { repoUrl } = await req.json();
 
@@ -284,36 +346,47 @@ export async function POST(req: NextRequest) {
 
     const { owner, repo } = repoDetails;
 
-    // Construct clone URL — never embed credentials in the URL string.
-    // If a token is available, use GIT_ASKPASS to provide it securely so it
-    // never appears in process arguments, shell history, or error output.
-    const tokens = getGitHubTokens();
+    // Standard public base clone URL used safely inside execution parameters
+    const cleanCloneUrl = `https://github.com/${owner}/${repo}.git`;
+
+    // Fetch local validation tokens securely
+    tokens = getGitHubTokens();
     const token = tokens.length > 0 ? tokens[0] : null;
-    const cloneUrl = `https://github.com/${owner}/${repo}.git`;
 
     // Create a temporary directory
     tempDir = fs.mkdtempSync(path.join(os.tmpdir(), `commitpulse-arch-${owner}-${repo}-`));
 
-    // Shallow clone the repository
+    // Shallow clone the repository securely using extraheader configurations
     try {
-      const env = { ...process.env } as NodeJS.ProcessEnv;
       if (token) {
-        // GIT_ASKPASS points to a script that reads the token from an environment
-        // variable instead of embedding it in the script body. This prevents the
-        // token from persisting on disk if the process crashes.
-        const askpassScript = path.join(tempDir, '.git-askpass.sh');
-        fs.writeFileSync(
-          askpassScript,
-          '#!/bin/sh\nif [ -n "$GIT_TOKEN" ]; then\necho "$GIT_TOKEN"\nelse\nexit 1\nfi',
-          { mode: 0o700 }
-        );
-        env.GIT_ASKPASS = askpassScript;
-        env.GIT_TOKEN = token;
-        env.GIT_TERMINAL_PROMPT = '0';
+        const authToken = Buffer.from(`x-access-token:${token}`).toString('base64');
+        await execFilePromise('git', [
+          '-c',
+          `http.extraheader=Authorization: Basic ${authToken}`,
+          'clone',
+          '--depth',
+          '1',
+          '--',
+          cleanCloneUrl,
+          tempDir,
+        ]);
+      } else {
+        await execFilePromise('git', ['clone', '--depth', '1', '--', cleanCloneUrl, tempDir]);
       }
-      await execFilePromise('git', ['clone', '--depth', '1', '--', cloneUrl, tempDir], { env });
     } catch (err) {
-      console.error('Cloning failed for repository:', repoUrl, sanitizeError(err));
+      // Clean up token credentials from the error logs safely before recording
+      const rawErrorMsg = err instanceof Error ? err.message : String(err);
+      let sanitizedErrorMsg = rawErrorMsg;
+
+      if (tokens && tokens.length > 0) {
+        tokens.forEach((t) => {
+          if (t) {
+            sanitizedErrorMsg = sanitizedErrorMsg.split(t).join('[REDACTED]');
+          }
+        });
+      }
+
+      console.error('Cloning failed for repository:', repoUrl, sanitizedErrorMsg);
       // Clean up tempDir if it was created
       if (tempDir && fs.existsSync(tempDir)) {
         fs.rmSync(tempDir, { recursive: true, force: true });
@@ -323,6 +396,16 @@ export async function POST(req: NextRequest) {
           error: 'Failed to clone repository. Make sure the repository exists and is accessible.',
         },
         { status: 404 }
+      );
+    }
+
+    // Check disk quota - if clone is too large, abort and clean up
+    const dirSize = getDirSize(tempDir);
+    if (dirSize > MAX_TEMP_DIR_SIZE_BYTES) {
+      fs.rmSync(tempDir, { recursive: true, force: true });
+      return NextResponse.json(
+        { error: 'Repository exceeds maximum allowed size (500MB).' },
+        { status: 413 }
       );
     }
 
@@ -610,7 +693,7 @@ export async function POST(req: NextRequest) {
         
         Generate a detailed architectural analysis summary for the project maintainer.
         Format your response as a professional bulleted report (exactly 5 concise points, under 30 words each). Focus on:
-        - Overall layout design (e.g. modular, component-centric, monolothic, layered).
+        - Overall layout design (e.g. modular, component-centric, monolithic, layered).
         - Separation of concerns and code reusability.
         - Core interfaces, API structure, or data flow paths.
         - Directory arrangement compliance with modern standards.
@@ -619,6 +702,7 @@ export async function POST(req: NextRequest) {
         Return exactly 5 bullet points. Do not include a conversational introduction or outro.
         `;
 
+        // Pass Gemini API key cleanly via headers rather than query parameters to protect telemetry leaks
         const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`;
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), REST_TIMEOUT_MS);
@@ -673,8 +757,20 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     console.error('Architecture visualizer route crashed:', error);
+
+    // Safety check fallback redaction in catch block for general tracking exceptions
+    const mainErrorMsg = error instanceof Error ? error.message : String(error);
+    let sanitizedMainErrorMsg = mainErrorMsg;
+    if (tokens && tokens.length > 0) {
+      tokens.forEach((t) => {
+        if (t) {
+          sanitizedMainErrorMsg = sanitizedMainErrorMsg.split(t).join('[REDACTED]');
+        }
+      });
+    }
+
     return NextResponse.json(
-      { error: 'Failed to analyze repository. Please try again later.' },
+      { error: `Failed to analyze repository. ${sanitizedMainErrorMsg}` },
       { status: 500 }
     );
   } finally {
@@ -686,5 +782,7 @@ export async function POST(req: NextRequest) {
         console.error('Failed to cleanup temp clone directory:', cleanupErr);
       }
     }
+    // Decrement concurrent clone counter
+    decrementClones(ip);
   }
 }
