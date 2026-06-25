@@ -22,7 +22,7 @@ describe('logger', () => {
       NODE_ENV: 'production',
     };
 
-    const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
 
     const logger = (await import('./logger')).default;
 
@@ -37,7 +37,7 @@ describe('logger', () => {
       NODE_ENV: 'production',
     };
 
-    const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
 
     const logger = (await import('./logger')).default;
 
@@ -52,7 +52,7 @@ describe('logger', () => {
       NODE_ENV: 'production',
     };
 
-    const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
 
     const logger = (await import('./logger')).default;
 
@@ -67,7 +67,7 @@ describe('logger', () => {
       NODE_ENV: 'production',
     };
 
-    const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
 
     const logger = (await import('./logger')).default;
 
@@ -94,7 +94,7 @@ describe('logger', () => {
       NODE_ENV: 'production',
     };
 
-    const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
 
     const logger = (await import('./logger')).default;
 
