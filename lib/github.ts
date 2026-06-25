@@ -53,7 +53,8 @@ export function shouldFallbackOnError(err: unknown): boolean {
     msg.includes('Authorization') ||
     msg.includes('status 500') ||
     msg.includes('error: 500') ||
-    msg.includes('Bad credentials')
+    msg.includes('Bad credentials') ||
+    msg.includes('GitHub token is missing')
   ) {
     return false;
   }
