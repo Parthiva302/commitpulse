@@ -332,6 +332,18 @@ export default function Generator() {
       {/* ERROR MESSAGE */}
       {error && <div className={styles.errorMessage}>{error}</div>}
 
+      {/* LOADING SKELETON */}
+      {isLoading && (
+        <div className={styles.skeletonPreview}>
+          <div
+            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}
+          >
+            <span className={styles.spinnerSmall}></span>
+            <span>Fetching your GitHub data...</span>
+          </div>
+        </div>
+      )}
+
       {/* BADGE PREVIEW */}
       {badge && !isLoading && (
         <div className={styles.previewSection}>
