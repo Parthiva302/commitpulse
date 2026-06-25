@@ -14,14 +14,23 @@ function verifyGitHubSignature(request: NextRequest, payload: string): boolean {
   const signature = request.headers.get('x-hub-signature-256');
   if (!signature) return false;
 
+  const SIGNATURE_PREFIX = 'sha256=';
+  if (!signature.startsWith(SIGNATURE_PREFIX)) return false;
+
+  const signatureHex = signature.slice(SIGNATURE_PREFIX.length);
+  if (!/^[a-f0-9]{64}$/i.test(signatureHex)) return false;
+
   const secret = process.env.WEBHOOK_SECRET || '';
   if (!secret) return false;
 
   const hmac = createHmac('sha256', secret);
   hmac.update(payload);
-  const expected = `sha256=${hmac.digest('hex')}`;
+  const expectedHex = hmac.digest('hex');
 
-  return timingSafeEqual(Buffer.from(signature), Buffer.from(expected));
+  const expected = Buffer.from(expectedHex, 'hex');
+  const received = Buffer.from(signatureHex, 'hex');
+
+  return expected.length === received.length && timingSafeEqual(expected, received);
 }
 
 export async function POST(request: NextRequest) {

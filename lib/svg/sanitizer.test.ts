@@ -33,10 +33,11 @@ describe('SVG Sanitizer Utilities', () => {
       expect(isValidHex('ff00ff"')).toBe(false);
     });
 
-    it('returns false for invalid length', () => {
+    it('returns false for invalid lengths', () => {
       expect(isValidHex('f')).toBe(false);
       expect(isValidHex('ff')).toBe(false);
       expect(isValidHex('fffff')).toBe(false);
+      expect(isValidHex('fffffff')).toBe(false);
     });
 
     it('returns false for undefined, null, or empty string', () => {
@@ -45,20 +46,8 @@ describe('SVG Sanitizer Utilities', () => {
       expect(isValidHex('')).toBe(false);
     });
 
-    it('returns false for an empty string', () => {
-      expect(isValidHex('')).toBe(false);
-    });
-
     it('returns false for just a hash symbol', () => {
       expect(isValidHex('#')).toBe(false);
-    });
-
-    it('returns false for undefined input', () => {
-      expect(isValidHex(undefined)).toBe(false);
-    });
-
-    it('returns false for invalid length (7 characters)', () => {
-      expect(isValidHex('fffffff')).toBe(false);
     });
   });
 
@@ -367,6 +356,26 @@ describe('parseGradientStops', () => {
     const colors = Array.from({ length: 12 }, () => 'aabbcc').join(',');
     const result = parseGradientStops(colors);
     expect(result.length).toBe(MAX_GRADIENT_STOPS);
+  });
+
+  it('trims whitespace around color values', () => {
+    expect(parseGradientStops('  #ff6b35 ,  #7000ff  ')).toEqual(['ff6b35', '7000ff']);
+  });
+
+  it('handles whitespace with mixed valid and invalid colors', () => {
+    expect(parseGradientStops('  #ff6b35 , invalid , #7000ff ')).toEqual(['ff6b35', '7000ff']);
+  });
+
+  it('ignores empty tokens', () => {
+    expect(parseGradientStops('ff6b35,,7000ff,,,')).toEqual(['ff6b35', '7000ff']);
+  });
+
+  it('handles leading and trailing commas', () => {
+    expect(parseGradientStops(',ff6b35,7000ff,')).toEqual(['ff6b35', '7000ff']);
+  });
+
+  it('preserves uppercase hex colors', () => {
+    expect(parseGradientStops('FF6B35,7000FF')).toEqual(['FF6B35', '7000FF']);
   });
 });
 
