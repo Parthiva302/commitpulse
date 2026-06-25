@@ -24,9 +24,13 @@ vi.mock('framer-motion', () => ({
       ...props
     }: React.ComponentProps<'div'> & Record<string, unknown>) => {
       const {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         initial: _initial,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         animate: _animate,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         exit: _exit,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         transition: _transition,
         ...rest
       } = props;
@@ -37,6 +41,7 @@ vi.mock('framer-motion', () => ({
       );
     },
     p: ({ children, ...props }: React.ComponentProps<'p'> & Record<string, unknown>) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { initial: _initial, animate: _animate, exit: _exit, ...rest } = props;
       return <p {...rest}>{children}</p>;
     },

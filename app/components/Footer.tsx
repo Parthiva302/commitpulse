@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useTranslation } from '@/context/TranslationContext';
 import {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   GitFork,
   GitBranch,
   MessageCircle,

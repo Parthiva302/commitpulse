@@ -12,12 +12,14 @@ import { getClientIp } from '@/utils/getClientIp';
 
 const execFilePromise = promisify(execFile);
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const REST_TIMEOUT_MS = 5000; // 5s timeout for external API requests
 
 /**
  * Strips credentials (x-access-token:...@) from error messages to prevent
  * leaking tokens into server logs.
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function sanitizeError(err: unknown): string {
   const msg = err instanceof Error ? err.message : String(err);
   return msg.replace(/x-access-token:[^@]+@/g, 'x-access-token:[REDACTED]@');

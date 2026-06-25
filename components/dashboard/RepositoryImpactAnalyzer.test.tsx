@@ -127,6 +127,7 @@ describe('RepositoryImpactAnalyzer', () => {
       },
     ];
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { container } = render(<RepositoryImpactAnalyzer repositories={repos} />);
 
     // Region role and labelling check

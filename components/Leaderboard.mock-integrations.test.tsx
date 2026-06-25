@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import Leaderboard, { type Contributor } from './Leaderboard';
 
 vi.mock('next/image', () => ({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   default: ({ alt = '', fill, ...props }: ComponentProps<'img'> & { fill?: boolean }) => (
     // eslint-disable-next-line @next/next/no-img-element
     <img alt={alt} {...props} />
@@ -14,11 +15,17 @@ vi.mock('framer-motion', () => ({
   motion: {
     div: ({
       children,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       whileHover,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       whileInView,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       initial,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       viewport,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       transition,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       animate,
       ...props
     }: ComponentProps<'div'> & {

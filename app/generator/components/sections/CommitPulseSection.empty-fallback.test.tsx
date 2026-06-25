@@ -11,6 +11,7 @@ vi.mock('@/hooks/useDebounce', () => ({
 
 // Mock next/image
 vi.mock('next/image', () => ({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   default: ({ alt = '', src = '', fill, ...props }: ComponentProps<'img'> & { fill?: boolean }) => (
     // eslint-disable-next-line @next/next/no-img-element
     <img alt={alt} src={src} {...props} />

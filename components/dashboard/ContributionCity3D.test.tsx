@@ -28,6 +28,7 @@ class MockResizeObserver {
   constructor(cb: ResizeObserverCallback) {
     this.cb = cb;
   }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   observe(target: Element) {
     // Fire callback immediately so useEffect canvas sizing runs
     this.cb(

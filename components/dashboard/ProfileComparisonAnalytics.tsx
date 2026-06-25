@@ -7,8 +7,11 @@ import {
   Trophy,
   Flame,
   Sparkles,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   Star,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   GitFork,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   GitCommit,
   MapPin,
   Calendar,

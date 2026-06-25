@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { describe, it, expect, vi, beforeEach, afterEach, beforeAll } from 'vitest';
 import React from 'react';
 

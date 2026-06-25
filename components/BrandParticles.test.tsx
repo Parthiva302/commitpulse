@@ -4,6 +4,7 @@ import '@testing-library/jest-dom/vitest';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import BrandParticles from './BrandParticles';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 let mockReducedMotion = false;
 
 // 1. Declare the type interfaces first

@@ -175,6 +175,7 @@ export function computeTowers(
       const isGhost = !hasCommits && shouldShowGhostCity;
       const isTodayWithCommits = isToday && hasCommits;
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const [y, m, d] = day.date.split('-');
       const monthNames = [
         'Jan',

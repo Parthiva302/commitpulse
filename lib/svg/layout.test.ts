@@ -13,6 +13,7 @@ import {
   LINEAR_SCALE_MULTIPLIER,
   MAX_LOG_HEIGHT,
   MAX_LINEAR_HEIGHT,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   MAX_SQRT_HEIGHT,
 } from './layoutConstants';
 

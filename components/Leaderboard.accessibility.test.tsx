@@ -6,6 +6,7 @@ import Leaderboard from './Leaderboard';
 import '@testing-library/jest-dom';
 
 vi.mock('next/image', () => ({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   default: ({ fill, ...props }: ImgHTMLAttributes<HTMLImageElement> & { fill?: boolean }) => (
     <img alt="" {...props} />
   ),

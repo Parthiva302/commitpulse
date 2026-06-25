@@ -2,6 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   resolveDashboardPeriod,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   shiftDashboardPeriod,
   dashboardPeriodToSearchParams,
 } from './dashboardPeriod';

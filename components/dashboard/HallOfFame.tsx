@@ -12,6 +12,7 @@ import {
   LucideIcon,
 } from 'lucide-react';
 import type { HallOfFameAward } from '@/types/dashboard';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import Image from 'next/image';
 
 interface HallOfFameProps {

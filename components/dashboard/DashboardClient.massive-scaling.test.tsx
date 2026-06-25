@@ -13,6 +13,7 @@ global.IntersectionObserver = class IntersectionObserver {
   unobserve = vi.fn();
   disconnect = vi.fn();
   takeRecords = vi.fn(() => []);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(callback: IntersectionObserverCallback, options?: IntersectionObserverInit) {}
 } as unknown as typeof IntersectionObserver;
 
@@ -22,6 +23,7 @@ vi.mock('next/navigation', () => ({
     replace: vi.fn(),
   }),
   useSearchParams: () => ({
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     get: vi.fn((key: string) => null),
     entries: vi.fn(() => []),
   }),

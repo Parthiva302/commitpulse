@@ -123,6 +123,7 @@ describe('isLocDay type guard', () => {
   });
 
   it('returns false for a day with NaN locAdditions', () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const day = {
       contributionCount: 0,
       date: '2024-06-10',

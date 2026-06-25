@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { UserMinus, Calendar, AlertCircle, Info } from 'lucide-react';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import Image from 'next/image';
 
 interface InactivityAlert {

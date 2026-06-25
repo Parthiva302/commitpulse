@@ -129,6 +129,7 @@ describe('hex validity — all theme color values must be valid 6-char hex strin
   });
 
   it('no theme has a hex value with a leading # (values must be without #)', () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     for (const [name, theme] of themeEntries) {
       expect(theme.bg.startsWith('#')).toBe(false);
       expect(theme.text.startsWith('#')).toBe(false);
@@ -137,6 +138,7 @@ describe('hex validity — all theme color values must be valid 6-char hex strin
   });
 
   it('no theme has a hex value shorter than 6 characters', () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     for (const [name, theme] of themeEntries) {
       expect(theme.bg.length).toBeGreaterThanOrEqual(6);
       expect(theme.text.length).toBeGreaterThanOrEqual(6);

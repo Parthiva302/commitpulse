@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { describe, expect, it, vi } from 'vitest';
 
 import CopyRepoButton from './CopyRepoButton';

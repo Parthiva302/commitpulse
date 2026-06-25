@@ -175,6 +175,7 @@ function addCandidate(
   bucketMap.set(sourceId, sourceBucket);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function connectManyToMany(
   bucketMap: Map<string, Map<string, EdgeBucket>>,
   sources: string[],

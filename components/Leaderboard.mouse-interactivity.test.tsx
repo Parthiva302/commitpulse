@@ -5,6 +5,7 @@ import Leaderboard, { Contributor } from './Leaderboard';
 
 // Mock Next.js Image
 vi.mock('next/image', () => ({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   default: ({ fill, ...props }: React.ImgHTMLAttributes<HTMLImageElement> & { fill?: boolean }) => (
     <img alt="mock" {...props} />
   ),
@@ -21,11 +22,17 @@ vi.mock('framer-motion', async () => {
         className,
         onClick,
         style,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         whileHover,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         whileInView,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         initial,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         viewport,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         transition,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         animate,
       }: {
         children?: React.ReactNode;

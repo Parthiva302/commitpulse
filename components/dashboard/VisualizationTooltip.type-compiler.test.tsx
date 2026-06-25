@@ -44,6 +44,7 @@ describe('VisualizationTooltip type compiler tests', () => {
   it('rejects invalid property types during compilation', () => {
     expectTypeOf<VisualizationTooltipProps>().toBeObject();
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const invalidProps: VisualizationTooltipProps = {
       title: 'Test',
       children: 'Content',
@@ -57,6 +58,7 @@ describe('VisualizationTooltip type compiler tests', () => {
     expectTypeOf<VisualizationTooltipProps>().toBeObject();
 
     // @ts-expect-error y is required
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const invalidProps: VisualizationTooltipProps = {
       title: 'Test',
       children: 'Content',

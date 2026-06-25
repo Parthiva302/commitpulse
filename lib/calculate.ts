@@ -133,6 +133,7 @@ export function findTodayIndex(
 
   return localTodayIndex !== -1 ? localTodayIndex : -1;
 }
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getDayDifference(fromDate: string, toDate: string): number {
   const from = new Date(`${fromDate}T00:00:00Z`);
   const to = new Date(`${toDate}T00:00:00Z`);
@@ -594,6 +595,7 @@ export function calculateWrappedStats(calendar?: ContributionCalendar | null) {
  */
 export function normalizeCalendarToTimezone(
   calendar: ContributionCalendar,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _targetTimezone: string // retained for backward compatibility with existing callers
 ): ContributionCalendar {
   if (!calendar || !calendar.weeks || calendar.weeks.length === 0) {

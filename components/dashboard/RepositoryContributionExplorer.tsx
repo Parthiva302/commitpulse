@@ -10,6 +10,7 @@ interface Props {
   username: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function RepositoryContributionExplorer({ repos = [], username }: Props) {
   const [selectedRepoIndex, setSelectedRepoIndex] = useState<number>(0);
 

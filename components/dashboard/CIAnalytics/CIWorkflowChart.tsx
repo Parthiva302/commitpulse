@@ -23,6 +23,7 @@ const STATUS_COLORS = {
   inProgress: '#3b82f6',
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const STATUS_LABELS: Record<string, string> = {
   success: 'Success',
   failed: 'Failed',

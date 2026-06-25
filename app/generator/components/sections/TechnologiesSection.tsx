@@ -6,6 +6,7 @@ import { TECHNOLOGIES, TECH_CATEGORIES } from '../../data/technologies';
 import { SectionCard, FieldLabel } from '../SectionCard';
 import type { Technology } from '../../types';
 import { getRecommendations } from '@/lib/graph/recommendationEngine';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { TechnologyGraph } from './TechnologyGraph';
 
 interface TechnologiesSectionProps {

@@ -21,10 +21,15 @@ vi.mock('framer-motion', () => ({
   motion: {
     div: ({
       children,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       whileInView,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       viewport,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       initial,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       animate,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       transition,
       ...props
     }: MotionDivProps) => <div {...props}>{children}</div>,

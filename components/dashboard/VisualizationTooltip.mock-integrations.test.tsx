@@ -10,7 +10,9 @@ vi.mock('framer-motion', () => ({
       children,
       initial,
       animate,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       exit: _exit,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       transition: _transition,
       ...props
     }: {

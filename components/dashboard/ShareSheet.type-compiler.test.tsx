@@ -33,6 +33,7 @@ describe('ShareSheet Type Compiler Validation', () => {
 
 // Compile-time validation checks
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const invalidUsername: ShareSheetProps = {
   // @ts-expect-error username must be string
   username: 123,
@@ -41,6 +42,7 @@ const invalidUsername: ShareSheetProps = {
   exportData: {} as DashboardExportData,
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const invalidIsOpen: ShareSheetProps = {
   username: 'octocat',
   // @ts-expect-error isOpen must be boolean
@@ -49,6 +51,7 @@ const invalidIsOpen: ShareSheetProps = {
   exportData: {} as DashboardExportData,
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const invalidOnClose: ShareSheetProps = {
   username: 'octocat',
   isOpen: true,

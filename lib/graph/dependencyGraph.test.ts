@@ -325,7 +325,9 @@ describe('DEPENDENCY_GRAPH edge case handling', () => {
 
     // Access various properties
     for (const key of originalKeys) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const _node = DEPENDENCY_GRAPH[key];
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const _edges = DEPENDENCY_GRAPH[key].edges;
     }
 

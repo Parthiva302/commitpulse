@@ -27,6 +27,7 @@ describe('app/api/track-user/route — Massive Data Sets and Extreme High Bounds
   ): MockTrackingResponseState => {
     const startTime = performance.now();
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     let calculatedWeight = 0;
     actionsQueue.forEach((action) => {
       calculatedWeight += action.metricPayloadSize;

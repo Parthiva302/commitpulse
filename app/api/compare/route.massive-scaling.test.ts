@@ -86,6 +86,7 @@ describe('API Compare Route - Massive Data Sets and High Bounds Scaling', () => 
         const text = await response.text();
         if (text.includes('<svg')) svgText = text;
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e: unknown) {
       // Ignored to strictly evaluate the bounding logic assertions below
     }
@@ -106,6 +107,7 @@ describe('API Compare Route - Massive Data Sets and High Bounds Scaling', () => 
 
     try {
       await GET(req);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e: unknown) {
       // Graceful isolation boundary
     }

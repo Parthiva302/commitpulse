@@ -7,6 +7,7 @@ import React from 'react';
 
 // Mock next/image
 vi.mock('next/image', () => ({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   default: ({ alt = '', src = '', fill, ...props }: ComponentProps<'img'> & { fill?: boolean }) => (
     <img alt={alt} src={src} {...props} />
   ),

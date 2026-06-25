@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { DistributedCache, LockConfig } from './cache';
 
 describe('DistributedCache distributed lock improvements', () => {

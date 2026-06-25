@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { describe, it, expect, beforeAll, vi, afterAll } from 'vitest';
 import { readFile, writeFile, unlink, access } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';

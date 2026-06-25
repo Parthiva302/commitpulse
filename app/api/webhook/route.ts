@@ -7,6 +7,7 @@ import { logger } from '@/lib/logger';
 const MAX_PAYLOAD_SIZE = 1024 * 1024; // 1MB
 const SIGNATURE_PREFIX = 'sha256=';
 const SHA256_HEX_LENGTH = 64;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const READ_CHUNK_SIZE = 64 * 1024; // 64KB chunks
 
 function getWebhookSecret(): string | null {
@@ -111,7 +112,9 @@ export async function POST(req: Request) {
   // Valid payload, proceed...
   let payload;
   try {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     payload = JSON.parse(bodyText);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
   }

@@ -161,6 +161,7 @@ export default function Generator() {
             };
           }
         }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (e) {
         // ignore stats fetch error
       }

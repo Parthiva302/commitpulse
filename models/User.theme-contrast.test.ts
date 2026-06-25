@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import mongoose from 'mongoose';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { IUser, User } from './User';
 
 describe('User model — theme-contrast assessment', () => {
@@ -11,6 +12,7 @@ describe('User model — theme-contrast assessment', () => {
   });
 
   it('defines username with required, unique, lowercase, and trim constraints', () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const path = User.schema.path('username') as mongoose.SchemaTypeOptions<string>;
     expect(User.schema.path('username')).toBeDefined();
     const instance = User.schema.path('username') as unknown as {
@@ -23,6 +25,7 @@ describe('User model — theme-contrast assessment', () => {
   });
 
   it('sets createdAt default to Date.now', () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const path = User.schema.path('createdAt') as mongoose.SchemaTypeOptions<Date>;
     expect(User.schema.path('createdAt')).toBeDefined();
     const defaultValue = (

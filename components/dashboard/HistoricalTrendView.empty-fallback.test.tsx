@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import HistoricalTrendView from './HistoricalTrendView';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { ActivityData } from '@/types/dashboard';
 import type { DashboardPeriod } from '@/utils/dashboardPeriod';
 

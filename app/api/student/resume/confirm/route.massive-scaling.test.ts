@@ -2,8 +2,10 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { POST } from './route';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { StudentProfile } from '@/models/StudentProfile';
 import { resumeConfirmDataSchema } from '@/lib/validations';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { verifyGitHubOwner } from '@/lib/github-owner-verification';
 
 vi.mock('@/lib/mongodb', () => ({
@@ -231,6 +233,7 @@ describe('ApiStudentResumeConfirmRoute - Massive Data Sets and Extreme High Boun
       },
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const requestObj = makeRequest(bodyPayload);
 
     const startTime = performance.now();

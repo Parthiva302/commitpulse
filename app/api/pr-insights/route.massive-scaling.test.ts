@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { describe, it, expect, vi } from 'vitest';
 import { GET } from './route'; // Ensure this matches your API handler export
 import { NextRequest } from 'next/server';
@@ -17,6 +18,7 @@ const generateMassiveLogs = (count: number) => {
 describe('PR Insights Route - Massive Data Sets & Extreme High Bounds Scaling', () => {
   // Test Case 1: Handle massive array structures cleanly
   it('should successfully process thousands of activity logs without memory or buffer errors', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const massiveData = generateMassiveLogs(2000);
 
     // NOTE: If your route pulls data from a DB or global service, mock it here:

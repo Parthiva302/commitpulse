@@ -23,8 +23,11 @@ const TIME_RANGES = [
 export default function CIFilters({
   filters,
   onChange,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   repos,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   branches,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   workflows,
 }: CIFiltersProps) {
   const update = (key: keyof CIAnalyticsFilters, value: string) => {

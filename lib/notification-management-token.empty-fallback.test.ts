@@ -70,12 +70,14 @@ describe('notification management token empty / missing inputs', () => {
 
     it('ignores managementToken in query parameters (security: no URL leakage)', () => {
       const req = mockRequest();
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const params = new URLSearchParams({ managementToken: 'query-token-123' });
       expect(getNotificationManagementToken(req, undefined)).toBeNull();
     });
 
     it('ignores token query parameter (security: no URL leakage)', () => {
       const req = mockRequest();
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const params = new URLSearchParams({ token: 'fallback-token-456' });
       expect(getNotificationManagementToken(req, undefined)).toBeNull();
     });
@@ -89,6 +91,7 @@ describe('notification management token empty / missing inputs', () => {
     it('prefers body over query params when both are present', () => {
       const req = mockRequest();
       const body = { managementToken: 'body-value' };
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const params = new URLSearchParams({ managementToken: 'query-value' });
       expect(getNotificationManagementToken(req, body)).toBe('body-value');
     });

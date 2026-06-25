@@ -35,6 +35,7 @@ describe('RepositoryContributionExplorer', () => {
   ];
 
   it('renders the empty fallback state when no repos are provided', () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { container } = render(<RepositoryContributionExplorer username="testuser" repos={[]} />);
     expect(screen.getByText(/No repository data available to explore/i)).toBeTruthy();
   });

@@ -39,11 +39,17 @@ vi.mock('framer-motion', () => {
           children,
           className,
           style,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           initial,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           animate,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           whileInView,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           viewport,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           transition,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           whileHover,
           ...rest
         },
@@ -55,6 +61,7 @@ vi.mock('framer-motion', () => {
       )
     ),
     g: React.forwardRef<SVGGElement, MotionGProps>(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       ({ children, className, initial, animate, transition, ...rest }, ref) => (
         <g ref={ref} className={className} {...rest}>
           {children}
