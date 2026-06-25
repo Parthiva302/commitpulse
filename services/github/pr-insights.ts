@@ -1,3 +1,4 @@
+import 'server-only';
 import { fetchWithRetry, getGitHubTokens } from '@/lib/github';
 import { DistributedCache } from '@/lib/cache';
 
@@ -60,6 +61,7 @@ export interface PRInsightData {
     fastestMerged?: { title: string; url: string; time: number }; // time in hours
     largest?: { title: string; url: string; additions: number; deletions: number };
   };
+  prs: { title: string; url: string; state: string; createdAt: string; repo: string }[];
 }
 
 const prInsightsCache = new DistributedCache<PRInsightData>(500);
@@ -81,7 +83,8 @@ function getHeaders(userToken?: string) {
 
 export async function fetchPRInsights(
   username: string,
-  userToken?: string
+  userToken?: string,
+  signal?: AbortSignal
 ): Promise<PRInsightData> {
   const cacheKey = `pr-insights:${username.toLowerCase()}`;
   const CACHE_TTL_MS = 15 * 60 * 1000; // 15 minutes cache
@@ -89,7 +92,7 @@ export async function fetchPRInsights(
   return prInsightsCache.getOrSet(
     cacheKey,
     async () => {
-      return fetchPRInsightsUncached(username, userToken);
+      return fetchPRInsightsUncached(username, userToken, signal);
     },
     CACHE_TTL_MS
   );
@@ -97,7 +100,8 @@ export async function fetchPRInsights(
 
 async function fetchPRInsightsUncached(
   username: string,
-  userToken?: string
+  userToken?: string,
+  signal?: AbortSignal
 ): Promise<PRInsightData> {
   // We use the GraphQL search API to get PRs authored by the user and PRs reviewed by the user.
   // This is more efficient than iterating through user.pullRequests.
@@ -167,6 +171,7 @@ async function fetchPRInsightsUncached(
       headers: getHeaders(userToken),
       body: JSON.stringify({ query, variables: { ...variables, after } }),
       cache: 'no-store',
+      signal,
     });
 
     if (!res.ok) {
@@ -349,6 +354,13 @@ async function fetchPRInsightsUncached(
       fastestMerged: fastestMerged.time !== Infinity ? fastestMerged : undefined,
       largest: largest.additions >= 0 ? largest : undefined,
     },
+    prs: authoredPRs.map((pr) => ({
+      title: pr.title,
+      url: pr.url,
+      state: pr.state,
+      createdAt: pr.createdAt,
+      repo: pr.repository?.nameWithOwner ?? 'Unknown',
+    })),
   };
 }
 

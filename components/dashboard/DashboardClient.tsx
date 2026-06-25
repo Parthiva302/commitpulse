@@ -26,6 +26,7 @@ import Heatmap from './Heatmap';
 import HistoricalTrendView from './HistoricalTrendView';
 import AIInsights from './AIInsights';
 import StatsCard from './StatsCard';
+import UnifiedIntelligenceCenter from './UnifiedIntelligenceCenter';
 import RepositoryGraph from './RepositoryGraph';
 import HallOfFame from './HallOfFame';
 import ComparisonStatsCard from './ComparisonStatsCard';
@@ -41,6 +42,10 @@ import PRInsightsClient from './PRInsights/PRInsightsClient';
 import CIAnalyticsClient from './CIAnalytics/CIAnalyticsClient';
 import DeploymentTracker from './DeploymentTracker';
 import ArchitectureVisualizer from './ArchitectureVisualizer';
+import GoalTracker from './GoalTracker';
+import ActivityHeatmapPro from './ActivityHeatmapPro';
+import DeveloperJourneyTimeline from './DeveloperJourneyTimeline';
+import RepositoryContributionExplorer from './RepositoryContributionExplorer';
 
 // Define the dashboard data structure
 export interface DashboardData {
@@ -707,7 +712,22 @@ export default function DashboardClient({
 
           <div className="flex flex-col gap-6 lg:gap-8 min-w-0">
             <section>
+              <UnifiedIntelligenceCenter profile={initialData.profile} stats={initialData.stats} />
+            </section>
+
+            <section>
               <ActivityLandscape data={initialData.activity} />
+            </section>
+
+            <section>
+              <ActivityHeatmapPro
+                activity={initialData.activity}
+                commitClock={initialData.commitClock}
+              />
+            </section>
+
+            <section>
+              <GoalTracker username={username} activity={initialData.activity} />
             </section>
 
             <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -720,6 +740,20 @@ export default function DashboardClient({
                 activity={initialData.activity}
                 username={username}
                 period={period}
+              />
+            </section>
+
+            <section>
+              <DeveloperJourneyTimeline
+                activity={initialData.activity}
+                achievements={initialData.achievements}
+              />
+            </section>
+
+            <section>
+              <RepositoryContributionExplorer
+                repos={initialData.popularRepos}
+                username={initialData.profile.username}
               />
             </section>
           </div>
@@ -1232,11 +1266,16 @@ export default function DashboardClient({
         )}
       </AnimatePresence>
 
-      <ProfileOptimizerModal
-        isOpen={isOptimizerOpen}
-        onClose={() => setIsOptimizerOpen(false)}
-        userData={initialData}
-      />
+      {isOptimizerOpen &&
+        typeof window !== 'undefined' &&
+        createPortal(
+          <ProfileOptimizerModal
+            isOpen={isOptimizerOpen}
+            onClose={() => setIsOptimizerOpen(false)}
+            userData={initialData}
+          />,
+          document.body
+        )}
 
       {typeof window !== 'undefined' &&
         createPortal(

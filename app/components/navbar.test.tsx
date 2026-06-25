@@ -3,6 +3,10 @@ import { act, render, screen, fireEvent } from '@testing-library/react';
 import Navbar from './navbar';
 import type { ReactNode } from 'react';
 
+vi.mock('@/hooks/useKeyboardShortcuts', () => ({
+  useKeyboardShortcuts: vi.fn(),
+}));
+
 const originalLocalStorage = window.localStorage;
 
 afterAll(() => {
@@ -65,6 +69,8 @@ vi.mock('lucide-react', () => ({
   Globe: () => <div>GlobeIcon</div>,
   Sun: () => <div>SunIcon</div>,
   Moon: () => <div>MoonIcon</div>,
+  Search: () => <div>SearchIcon</div>,
+  ArrowRight: () => <div>ArrowRightIcon</div>,
 }));
 
 describe('Navbar mobile menu', () => {

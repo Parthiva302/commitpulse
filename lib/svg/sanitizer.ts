@@ -86,7 +86,7 @@ export function sanitizeFont(font: string | undefined | null): string | null {
   if (!font) return null;
   const trimmed = font.trim();
   if (!trimmed) return null;
-  const cleaned = trimmed.replace(/[^a-zA-Z0-9\s\-']/g, '').trim();
+  const cleaned = trimmed.replace(/[^a-zA-Z0-9\s\-]/g, '').trim();
   return cleaned || null;
 }
 
@@ -200,4 +200,13 @@ export function escapeXML(str: string): string {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;')
     .replace(/`/g, '&#96;');
+}
+
+/**
+ * Sanitizes input string to prevent XML injection/XSS.
+ * Removes/escapes any characters that could break out of SVG tags/attributes.
+ */
+export function sanitizeCustomText(text: string | undefined | null): string {
+  if (!text) return '';
+  return escapeXML(text);
 }

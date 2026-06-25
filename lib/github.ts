@@ -1,3 +1,5 @@
+import 'server-only';
+// Resolves Issue #6105 (Intelligent API Resilience)
 import type {
   ContributionCalendar,
   ContributionDay,
@@ -14,6 +16,7 @@ import { CONTRIBUTION_MILESTONES, STREAK_MILESTONES } from './svg/constants';
 import { quotaMonitor } from '@/services/github/quota-monitor';
 import pLimit from 'p-limit';
 import logger from '@/lib/logger';
+import { decryptGitHubToken, isEncryptedToken } from '@/lib/github-token-encryption';
 
 interface GitHubRepo {
   name: string;
@@ -28,12 +31,56 @@ interface GitHubRepo {
   homepage?: string | null;
 }
 
-const MAX_RETRIES = 3;
-const BASE_DELAY_MS = 500;
-const MAX_RETRY_DELAY_MS = 5000;
-const GRAPHQL_TIMEOUT_MS = 8000; // 8s for GraphQL endpoint
-const REST_TIMEOUT_MS = 5000; // 5s for REST endpoints
-const ORG_MEMBER_LIMIT = 100;
+const MAX_RETRIES = Number(process.env.GITHUB_MAX_RETRIES ?? '3');
+const BASE_DELAY_MS = Number(process.env.GITHUB_BASE_DELAY_MS ?? '500');
+const MAX_RETRY_DELAY_MS = Number(process.env.GITHUB_MAX_RETRY_DELAY_MS ?? '5000');
+
+export function getJitteredBackoff(attempt: number): number {
+  const base = BASE_DELAY_MS * Math.pow(2, attempt);
+  const jitter = 0.5 + Math.random() * 0.5;
+  return Math.round(base * jitter);
+}
+
+export function shouldFallbackOnError(err: unknown): boolean {
+  if (!err) return false;
+  const msg = err instanceof Error ? err.message : String(err);
+
+  if (
+    msg.includes('not found') ||
+    msg.includes('Not Found') ||
+    msg.includes('401') ||
+    msg.includes('Unauthorized') ||
+    msg.includes('token') ||
+    msg.includes('PAT') ||
+    msg.includes('Authorization') ||
+    msg.includes('status 500') ||
+    msg.includes('error: 500') ||
+    msg.includes('Bad credentials')
+  ) {
+    return false;
+  }
+
+  if (
+    msg.includes('fetch') ||
+    msg.includes('timeout') ||
+    msg.includes('timed out') ||
+    msg.includes('AbortError') ||
+    msg.includes('rate limit') ||
+    msg.includes('RATE_LIMITED') ||
+    msg.includes('Rate Limit') ||
+    err instanceof RateLimitError
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
+const GRAPHQL_TIMEOUT_MS = Number(process.env.GITHUB_GRAPHQL_TIMEOUT_MS ?? '8000');
+const REST_TIMEOUT_MS = Number(process.env.GITHUB_REST_TIMEOUT_MS ?? '5000');
+const ORG_MEMBER_LIMIT = Number(process.env.GITHUB_ORG_MEMBER_LIMIT ?? '100');
+const GRAPHQL_REPOSITORY_PAGE_SIZE = 100;
+const MAX_GRAPHQL_REPOSITORY_RESULTS = 500;
 
 let currentTokenIndex = 0;
 const rateLimitedTokens = new Map<string, number>();
@@ -66,7 +113,19 @@ export function getGitHubTokens(): string[] {
   return envToken
     .split(',')
     .map((t) => t.trim())
-    .filter((t) => t !== '');
+    .filter((t) => t !== '')
+    .map((token) => {
+      if (isEncryptedToken(token)) {
+        try {
+          return decryptGitHubToken(token);
+        } catch (error: unknown) {
+          const message = error instanceof Error ? error.message : String(error);
+          logger.warn(`Failed to decrypt GitHub token: ${message}`);
+          return token;
+        }
+      }
+      return token;
+    });
 }
 
 function isAbortError(error: unknown): boolean {
@@ -152,7 +211,7 @@ export async function fetchWithRetry(
       }
       throw fetchError;
     }
-    const delay = BASE_DELAY_MS * Math.pow(2, attempt);
+    const delay = getJitteredBackoff(attempt);
     await new Promise((resolve) => setTimeout(resolve, delay));
     return fetchWithRetry(url, options, attempt + 1, timeoutMs, userToken);
   }
@@ -160,7 +219,7 @@ export async function fetchWithRetry(
   if (!res) throw new Error('GitHub API request failed without a response');
 
   try {
-    quotaMonitor.updateQuotaFromHeaders(res.headers);
+    quotaMonitor.updateQuotaFromHeaders(res.headers, currentToken);
   } catch (err) {
     logger.error('Failed to update quota monitor', {
       component: 'GitHub',
@@ -196,7 +255,7 @@ export async function fetchWithRetry(
     }
     // Retry immediately with the next token if available
     if (attempt < MAX_RETRIES && tokens.length > 1) {
-      const delay = BASE_DELAY_MS * Math.pow(2, attempt);
+      const delay = getJitteredBackoff(attempt);
       await new Promise((resolve) => setTimeout(resolve, delay));
       return fetchWithRetry(url, options, attempt + 1, timeoutMs, userToken);
     }
@@ -227,7 +286,7 @@ export async function fetchWithRetry(
 
     if (attempt >= MAX_RETRIES) return res;
 
-    let delay = BASE_DELAY_MS * Math.pow(2, attempt);
+    let delay = getJitteredBackoff(attempt);
     if (retryAfter) {
       const parsed = parseInt(retryAfter, 10);
       if (!Number.isNaN(parsed) && String(parsed) === retryAfter) {
@@ -257,7 +316,7 @@ export async function fetchWithRetry(
   const shouldRetry = res.status >= 500;
   if (!shouldRetry || attempt >= MAX_RETRIES) return res;
 
-  const delay = BASE_DELAY_MS * Math.pow(2, attempt);
+  const delay = getJitteredBackoff(attempt);
   await new Promise((resolve) => setTimeout(resolve, delay));
   return fetchWithRetry(url, options, attempt + 1, timeoutMs, userToken);
 }
@@ -337,9 +396,7 @@ async function fetchGraphQLWithRetry(
 
   if (!isBodyRateLimited) return res;
 
-  const delay = BASE_DELAY_MS * Math.pow(2, attempt);
-  if (delay > MAX_RETRY_DELAY_MS) return res;
-
+  const delay = getJitteredBackoff(attempt);
   await new Promise((resolve) => setTimeout(resolve, delay));
   return fetchGraphQLWithRetry(url, options, attempt + 1, timeoutMs, userToken);
 }
@@ -422,6 +479,21 @@ interface GitHubGraphQLResponse {
   errors?: unknown;
 }
 
+interface GitHubContributedReposResponse {
+  data?: {
+    user: {
+      repositoriesContributedTo: {
+        nodes: ContributedRepo[];
+        pageInfo: {
+          hasNextPage: boolean;
+          endCursor: string | null;
+        };
+      } | null;
+    } | null;
+  };
+  errors?: unknown;
+}
+
 function getGraphQLErrorMessage(errors: unknown): string {
   if (!Array.isArray(errors)) return 'GitHub GraphQL API returned an unknown error';
   const firstError = errors[0];
@@ -448,7 +520,7 @@ type FetchOptions = {
   token?: string;
 };
 
-export const GITHUB_CACHE_TTL_MS = 5 * 60 * 1000;
+export const GITHUB_CACHE_TTL_MS = Number(process.env.GITHUB_CACHE_TTL_MS ?? String(5 * 60 * 1000));
 
 export const contributionsCache = new DistributedCache<ExtendedContributionData>(1000);
 const profileCache = new DistributedCache<GitHubUserProfile>(1000);
@@ -467,6 +539,7 @@ interface GitHubUserProfile {
   location: string | null;
   type?: string;
   plan?: { name?: string } | null;
+  isOfflineFallback?: boolean;
 }
 
 function sanitizeUserProfile(profile: GitHubUserProfile): GitHubUserProfile {
@@ -660,15 +733,32 @@ export function getCircuitTelemetry() {
  * DATA FETCHING
  * ========================================================================== */
 
-const FETCH_TIMEOUT_MS = 4000;
+const FETCH_TIMEOUT_MS = Number(process.env.GITHUB_FETCH_TIMEOUT_MS ?? '4000');
 const activeContributionsPromises = new Map<string, Promise<ExtendedContributionData>>();
+
+export function getMockContributions(): ExtendedContributionData {
+  return {
+    calendar: {
+      totalContributions: 0,
+      weeks: [],
+      lastSyncedAt: new Date().toISOString(),
+    },
+    repoContributions: [],
+    totalPRs: 0,
+    totalIssues: 0,
+    totalReviews: 0,
+    isOfflineFallback: true,
+  };
+}
 
 export async function fetchGitHubContributions(
   username: string,
   options: FetchOptions = {}
 ): Promise<ExtendedContributionData> {
   const key = cacheKey('contributions', username, options.from, options.to);
-  const LONG_CACHE_TTL = 7 * 24 * 60 * 60 * 1000;
+  const LONG_CACHE_TTL = Number(
+    process.env.GITHUB_LONG_CACHE_TTL_MS ?? String(7 * 24 * 60 * 60 * 1000)
+  );
 
   const shouldFetch = (cached: ExtendedContributionData) => {
     const now = Date.now();
@@ -733,7 +823,26 @@ export async function fetchGitHubContributions(
 
   if (options.signal) {
     if (options.bypassCache || options.forceRefresh) {
-      return await loadWithTimeout();
+      try {
+        return await loadWithTimeout();
+      } catch (err: unknown) {
+        if (shouldFallbackOnError(err)) {
+          const staleData = await contributionsCache.get(key);
+          if (staleData) {
+            logger.warn('GitHub API fetch failed, falling back to stale cache', {
+              component: 'GitHub API',
+              username,
+              error: err,
+            });
+            return {
+              ...staleData,
+              isOfflineFallback: true,
+            };
+          }
+          return getMockContributions();
+        }
+        throw err;
+      }
     }
     const cached = await contributionsCache.get(key);
     if (cached !== null && !shouldFetch(cached)) {
@@ -742,17 +851,20 @@ export async function fetchGitHubContributions(
     try {
       return await loadWithTimeout();
     } catch (err: unknown) {
-      const staleData = await contributionsCache.get(key);
-      if (staleData) {
-        logger.warn('GitHub API fetch failed, falling back to stale cache', {
-          component: 'GitHub API',
-          username,
-          error: err,
-        });
-        return {
-          ...staleData,
-          isOfflineFallback: true,
-        };
+      if (shouldFallbackOnError(err)) {
+        const staleData = await contributionsCache.get(key);
+        if (staleData) {
+          logger.warn('GitHub API fetch failed, falling back to stale cache', {
+            component: 'GitHub API',
+            username,
+            error: err,
+          });
+          return {
+            ...staleData,
+            isOfflineFallback: true,
+          };
+        }
+        return getMockContributions();
       }
       throw err;
     }
@@ -766,16 +878,19 @@ export async function fetchGitHubContributions(
       }
       return result;
     } catch (err: unknown) {
-      const staleData = await contributionsCache.get(key);
-      if (staleData) {
-        console.warn(
-          `[GitHub API] Fetch failed or timed out for "${username}", falling back to stale cache:`,
-          err
-        );
-        return {
-          ...staleData,
-          isOfflineFallback: true,
-        };
+      if (shouldFallbackOnError(err)) {
+        const staleData = await contributionsCache.get(key);
+        if (staleData) {
+          console.warn(
+            `[GitHub API] Fetch failed or timed out for "${username}", falling back to stale cache:`,
+            err
+          );
+          return {
+            ...staleData,
+            isOfflineFallback: true,
+          };
+        }
+        return getMockContributions();
       }
       throw err;
     }
@@ -784,17 +899,20 @@ export async function fetchGitHubContributions(
   try {
     return await contributionsCache.getOrSet(key, coalescedLoad, LONG_CACHE_TTL, shouldFetch);
   } catch (err: unknown) {
-    const staleData = await contributionsCache.get(key);
-    if (staleData) {
-      logger.warn('GitHub API fetch failed, falling back to stale cache', {
-        component: 'GitHub API',
-        username,
-        error: err,
-      });
-      return {
-        ...staleData,
-        isOfflineFallback: true,
-      };
+    if (shouldFallbackOnError(err)) {
+      const staleData = await contributionsCache.get(key);
+      if (staleData) {
+        logger.warn('GitHub API fetch failed, falling back to stale cache', {
+          component: 'GitHub API',
+          username,
+          error: err,
+        });
+        return {
+          ...staleData,
+          isOfflineFallback: true,
+        };
+      }
+      return getMockContributions();
     }
     throw err;
   }
@@ -916,7 +1034,6 @@ async function fetchContributionsUncached(
 
   calendar.lastSyncedAt = new Date().toISOString();
 
-  // 1. Fabricate the LOC additions and deletions fields with strict lint-compliant object mappings
   const processedWeeks = (calendar.weeks || []).map((week: unknown) => {
     const rawWeek = week as unknown as Record<string, unknown>;
     const contributionDays = Array.isArray(rawWeek.contributionDays)
@@ -930,22 +1047,13 @@ async function fetchContributionsUncached(
         const count = typeof rawDay.contributionCount === 'number' ? rawDay.contributionCount : 0;
 
         if (count === 0) {
-          return {
-            ...rawDay,
-            locAdditions: 0,
-            locDeletions: 0,
-          };
+          return { ...rawDay, locAdditions: 0, locDeletions: 0 };
         }
-        return {
-          ...rawDay,
-          locAdditions: undefined,
-          locDeletions: undefined,
-        };
+        return rawDay;
       }),
     };
   }) as unknown as typeof calendar.weeks;
 
-  // 2. Return the extended structure with processed fields packed into the calendar
   return {
     calendar: {
       ...calendar,
@@ -955,6 +1063,23 @@ async function fetchContributionsUncached(
     totalPRs,
     totalIssues,
     totalReviews,
+  };
+}
+
+export function getMockProfile(username: string): GitHubUserProfile {
+  return {
+    login: username,
+    name: username,
+    avatar_url: `https://github.com/${username}.png`,
+    public_repos: 0,
+    followers: 0,
+    following: 0,
+    created_at: new Date().toISOString(),
+    bio: 'Profile currently unavailable (offline fallback)',
+    location: null,
+    type: 'User',
+    plan: null,
+    isOfflineFallback: true,
   };
 }
 
@@ -969,8 +1094,41 @@ export async function fetchUserProfile(
     return fetchProfileUncached(encodedUsername, key, options);
   };
 
-  if (options.bypassCache || options.forceRefresh) return load();
-  return profileCache.getOrSet(key, load, GITHUB_CACHE_TTL_MS);
+  if (options.bypassCache || options.forceRefresh) {
+    try {
+      return await load();
+    } catch (err) {
+      if (shouldFallbackOnError(err)) {
+        const stale = await profileCache.get(key);
+        if (stale) {
+          logger.warn('GitHub API profile fetch failed, returning stale cache data', {
+            username,
+            error: err,
+          });
+          return { ...stale, isOfflineFallback: true };
+        }
+        return getMockProfile(username);
+      }
+      throw err;
+    }
+  }
+
+  try {
+    return await profileCache.getOrSet(key, load, GITHUB_CACHE_TTL_MS);
+  } catch (err) {
+    if (shouldFallbackOnError(err)) {
+      const stale = await profileCache.get(key);
+      if (stale) {
+        logger.warn('GitHub API profile fetch failed, returning stale cache data', {
+          username,
+          error: err,
+        });
+        return { ...stale, isOfflineFallback: true };
+      }
+      return getMockProfile(username);
+    }
+    throw err;
+  }
 }
 
 async function fetchProfileUncached(
@@ -1020,8 +1178,41 @@ export async function fetchUserRepos(
     return fetchReposUncached(encodedUsername, key, options);
   };
 
-  if (options.bypassCache || options.forceRefresh) return load();
-  return reposCache.getOrSet(key, load, GITHUB_CACHE_TTL_MS);
+  if (options.bypassCache || options.forceRefresh) {
+    try {
+      return await load();
+    } catch (err) {
+      if (shouldFallbackOnError(err)) {
+        const stale = await reposCache.get(key);
+        if (stale) {
+          logger.warn('GitHub API repos fetch failed, returning stale cache data', {
+            username,
+            error: err,
+          });
+          return stale;
+        }
+        return [];
+      }
+      throw err;
+    }
+  }
+
+  try {
+    return await reposCache.getOrSet(key, load, GITHUB_CACHE_TTL_MS);
+  } catch (err) {
+    if (shouldFallbackOnError(err)) {
+      const stale = await reposCache.get(key);
+      if (stale) {
+        logger.warn('GitHub API repos fetch failed, returning stale cache data', {
+          username,
+          error: err,
+        });
+        return stale;
+      }
+      return [];
+    }
+    throw err;
+  }
 }
 
 async function fetchReposUncached(
@@ -1049,7 +1240,7 @@ async function fetchReposUncached(
   const firstPageRepos = (await firstPageRes.json()) as GitHubRepo[];
   const allRepos: GitHubRepo[] = firstPageRepos.map(sanitizeRepo);
 
-  const MAX_PAGES = 3;
+  const MAX_PAGES = Number(process.env.GITHUB_MAX_PAGES ?? '3');
 
   if (firstPageRepos.length === 100) {
     const remainingPages = Array.from({ length: MAX_PAGES - 1 }, (_, i) => i + 2);
@@ -1110,7 +1301,10 @@ export async function fetchOrgMembers(orgName: string, userToken?: string): Prom
         cache: 'no-store',
       }
     );
-    if (!res.ok) throw new Error(`Failed to fetch members for org ${orgName}`);
+    if (!res.ok) {
+      throwIfRateLimited(res);
+      throw new Error(`Failed to fetch members for org ${orgName}`);
+    }
     const members = (await res.json()) as { login: string }[];
     if (members.length === 0) break;
 
@@ -1380,72 +1574,133 @@ export async function fetchContributedRepos(
 
   const load = async () => {
     const query = `
-      query($login: String!) {
-        user(login: $login) {
-          repositoriesContributedTo(first: 100, contributionTypes: [COMMIT, ISSUE, PULL_REQUEST, REPOSITORY], orderBy: {field: UPDATED_AT, direction: DESC}) {
-            nodes {
-              name
-              nameWithOwner
-              owner { login }
-              stargazerCount
-              forkCount
-              primaryLanguage { name }
-              updatedAt
-            }
+    query($login: String!, $after: String) {
+      user(login: $login) {
+        repositoriesContributedTo(first: ${GRAPHQL_REPOSITORY_PAGE_SIZE}, after: $after, contributionTypes: [COMMIT, ISSUE, PULL_REQUEST, REPOSITORY], orderBy: {field: UPDATED_AT, direction: DESC}) {
+          nodes {
+            name
+            nameWithOwner
+            owner { login }
+            stargazerCount
+            forkCount
+            primaryLanguage { name }
+            updatedAt
+          }
+          pageInfo {
+            hasNextPage
+            endCursor
           }
         }
       }
-    `;
+    }
+  `;
 
-    const res = await fetchGraphQLWithRetry(
-      GITHUB_GRAPHQL_URL,
-      {
-        method: 'POST',
-        headers: getHeaders(options.token),
-        body: JSON.stringify({
-          query,
-          variables: { login: username },
-        }),
-        cache: 'no-store',
-        signal: options.signal,
-      },
-      0,
-      undefined,
-      options.token
-    );
+    const allRepos: ContributedRepo[] = [];
+    let after: string | null = null;
+    let hasNextPage = true;
 
-    if (!res.ok) {
-      throwIfRateLimited(res);
-      throw new Error(
-        `GitHub GraphQL API returned status ${res.status} after ${MAX_RETRIES} retries`
+    while (hasNextPage && allRepos.length < MAX_GRAPHQL_REPOSITORY_RESULTS) {
+      const res = await fetchGraphQLWithRetry(
+        GITHUB_GRAPHQL_URL,
+        {
+          method: 'POST',
+          headers: getHeaders(options.token),
+          body: JSON.stringify({
+            query,
+            variables: { login: username, after },
+          }),
+          cache: 'no-store',
+          signal: options.signal,
+        },
+        0,
+        undefined,
+        options.token
       );
-    }
 
-    const data = await res.json();
-
-    if (data?.errors !== undefined) {
-      if (Array.isArray(data.errors)) {
-        const isRateLimit = data.errors.some((e: unknown) => {
-          const err = e as { message?: string; type?: string };
-          return err?.message?.toLowerCase().includes('rate limit') || err?.type === 'RATE_LIMITED';
-        });
-        if (isRateLimit) {
-          throw new Error('API Rate Limit Exceeded');
-        }
+      if (!res.ok) {
+        throwIfRateLimited(res);
+        throw new Error(
+          `GitHub GraphQL API returned status ${res.status} after ${MAX_RETRIES} retries`
+        );
       }
-      throw new Error(getGraphQLErrorMessage(data.errors));
+
+      const data = (await res.json()) as GitHubContributedReposResponse;
+
+      if (data?.errors !== undefined) {
+        if (Array.isArray(data.errors)) {
+          const isRateLimit = data.errors.some((e: unknown) => {
+            const err = e as { message?: string; type?: string };
+            return (
+              err?.message?.toLowerCase().includes('rate limit') || err?.type === 'RATE_LIMITED'
+            );
+          });
+          if (isRateLimit) {
+            throw new Error('API Rate Limit Exceeded');
+          }
+        }
+        throw new Error(getGraphQLErrorMessage(data.errors));
+      }
+
+      const connection = data?.data?.user?.repositoriesContributedTo;
+      const nodes = connection?.nodes ?? [];
+
+      allRepos.push(...nodes);
+
+      const pageInfo = connection?.pageInfo;
+
+      after = pageInfo?.endCursor ?? null;
+      hasNextPage =
+        Boolean(pageInfo?.hasNextPage) &&
+        after !== null &&
+        allRepos.length < MAX_GRAPHQL_REPOSITORY_RESULTS;
+
+      if (nodes.length === 0) {
+        break;
+      }
     }
 
-    return data?.data?.user?.repositoriesContributedTo?.nodes || [];
+    return allRepos.slice(0, MAX_GRAPHQL_REPOSITORY_RESULTS);
   };
 
-  if (options.bypassCache) return load();
-  if (options.forceRefresh) {
-    const fresh = await load();
-    await contributedReposCache.set(key, fresh, GITHUB_CACHE_TTL_MS);
-    return fresh;
+  if (options.bypassCache || options.forceRefresh) {
+    try {
+      const fresh = await load();
+      if (options.forceRefresh) {
+        await contributedReposCache.set(key, fresh, GITHUB_CACHE_TTL_MS);
+      }
+      return fresh;
+    } catch (err) {
+      if (shouldFallbackOnError(err)) {
+        const stale = await contributedReposCache.get(key);
+        if (stale) {
+          logger.warn('GitHub API contributed repos fetch failed, returning stale cache data', {
+            username,
+            error: err,
+          });
+          return stale;
+        }
+        return [];
+      }
+      throw err;
+    }
   }
-  return contributedReposCache.getOrSet(key, load, GITHUB_CACHE_TTL_MS);
+
+  try {
+    return await contributedReposCache.getOrSet(key, load, GITHUB_CACHE_TTL_MS);
+  } catch (err) {
+    if (shouldFallbackOnError(err)) {
+      const stale = await contributedReposCache.get(key);
+      if (stale) {
+        logger.warn('GitHub API contributed repos fetch failed, returning stale cache data', {
+          username,
+          error: err,
+        });
+        return stale;
+      }
+      return [];
+    }
+    throw err;
+  }
 }
 
 export interface DeveloperScoreInput {
@@ -1721,17 +1976,19 @@ function mapConclusionToStatus(
 /** Fetch the most recent workflow run for a single repo (used for the status badge). */
 async function fetchLatestWorkflowRun(
   owner: string,
-  repo: string
+  repo: string,
+  token?: string
 ): Promise<GitHubWorkflowRun | null> {
   try {
     const res = await fetchWithRetry(
       `${GITHUB_REST_URL}/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/actions/runs?per_page=1`,
       {
-        headers: getHeaders(),
+        headers: getHeaders(token),
         cache: 'no-store',
       },
       0,
-      REST_TIMEOUT_MS
+      REST_TIMEOUT_MS,
+      token
     );
     if (!res.ok) return null;
     const data = await res.json();
@@ -1745,7 +2002,8 @@ async function fetchLatestWorkflowRun(
 /** Fetch the most recent deployment + its latest status for a single repo. */
 async function fetchLatestDeployment(
   owner: string,
-  repo: string
+  repo: string,
+  token?: string
 ): Promise<{
   deployment: GitHubDeployment;
   deploymentStatus: GitHubDeploymentStatus | null;
@@ -1754,11 +2012,12 @@ async function fetchLatestDeployment(
     const res = await fetchWithRetry(
       `${GITHUB_REST_URL}/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/deployments?per_page=1&environment=production`,
       {
-        headers: getHeaders(),
+        headers: getHeaders(token),
         cache: 'no-store',
       },
       0,
-      REST_TIMEOUT_MS
+      REST_TIMEOUT_MS,
+      token
     );
     if (!res.ok) return null;
     const deployments = (await res.json()) as GitHubDeployment[];
@@ -1768,11 +2027,12 @@ async function fetchLatestDeployment(
     const statusRes = await fetchWithRetry(
       `${GITHUB_REST_URL}/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/deployments/${deployment.id}/statuses?per_page=1`,
       {
-        headers: getHeaders(),
+        headers: getHeaders(token),
         cache: 'no-store',
       },
       0,
-      REST_TIMEOUT_MS
+      REST_TIMEOUT_MS,
+      token
     );
     const statuses = statusRes.ok ? ((await statusRes.json()) as GitHubDeploymentStatus[]) : [];
     return { deployment, deploymentStatus: statuses?.[0] ?? null };
@@ -1791,7 +2051,8 @@ async function fetchLatestDeployment(
 async function fetchDeploymentTrackerData(
   username: string,
   reposData: GitHubRepo[],
-  limit = 3
+  limit = 3,
+  token?: string
 ): Promise<import('../types/dashboard').DeploymentData[]> {
   // Only consider non-fork repos, most-recently-pushed first (reposData is
   // already sorted by `pushed` from fetchUserRepos). Check a slightly larger
@@ -1803,8 +2064,8 @@ async function fetchDeploymentTrackerData(
     candidates.map(async (repo) => {
       const owner = repo.owner?.login || username;
       const [workflowRun, deploymentInfo] = await Promise.all([
-        fetchLatestWorkflowRun(owner, repo.name),
-        fetchLatestDeployment(owner, repo.name),
+        fetchLatestWorkflowRun(owner, repo.name, token),
+        fetchLatestDeployment(owner, repo.name, token),
       ]);
 
       // Skip repos with no shipping signal at all
@@ -1898,7 +2159,9 @@ export async function getFullDashboardData(username: string, options: FetchOptio
   const pinnedRepos = pinnedReposResult.status === 'fulfilled' ? pinnedReposResult.value : [];
   const starredRepos = starredReposResult.status === 'fulfilled' ? starredReposResult.value : [];
 
-  const deployments = await fetchDeploymentTrackerData(username, reposData).catch(() => []);
+  const deployments = await fetchDeploymentTrackerData(username, reposData, 3, options.token).catch(
+    () => []
+  );
 
   const streakStats = calculateStreak(calendarData);
   const totalStars = reposData.reduce((acc, r) => acc + r.stargazers_count, 0);

@@ -1,7 +1,9 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
+import { Play, Pause, RotateCcw, Download } from 'lucide-react';
 import type { ActivityData } from '@/types/dashboard';
+import EmptyState from './EmptyState';
 
 // ─── Theme palette (mirrors lib/svg/themes.ts accent colours) ────────────────
 const THEME_PALETTES: Record<string, { accent: string; bg: string; top: string; side: string }> = {
@@ -53,6 +55,7 @@ export interface ContributionCity3DProps {
   theme?: string;
   /** Show the last N days of data (default: 98 = 14 weeks) */
   days?: number;
+  timeLapseMode?: boolean;
 }
 
 interface TooltipState {
@@ -66,6 +69,7 @@ export default function ContributionCity3D({
   data,
   theme = 'dark',
   days = 98,
+  timeLapseMode = false,
 }: ContributionCity3DProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -83,6 +87,14 @@ export default function ContributionCity3D({
   // Camera state – angles in radians
   const [isDragging, setIsDragging] = useState(false);
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
+
+  // Time-Lapse state
+  const [isPlaying, setIsPlaying] = useState(timeLapseMode);
+  const [playbackIndex, setPlaybackIndex] = useState(timeLapseMode ? 7 : days);
+
+  const [isExporting, setIsExporting] = useState(false);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const recordedChunksRef = useRef<Blob[]>([]);
 
   const cameraRef = useRef({
     rotY: 0.45, // orbit angle (0 = looking from +Z)
@@ -141,14 +153,99 @@ export default function ContributionCity3D({
     []
   );
 
+  const handleExport = useCallback(() => {
+    if (!window.MediaRecorder) {
+      alert('Your browser does not support the MediaRecorder API needed for export.');
+      return;
+    }
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    try {
+      // Cast canvas to any to avoid TS errors if captureStream is missing in types
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const stream = (canvas as any).captureStream(60);
+
+      let mimeType = 'video/webm';
+      if (typeof MediaRecorder.isTypeSupported === 'function') {
+        if (!MediaRecorder.isTypeSupported(mimeType)) {
+          if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9')) {
+            mimeType = 'video/webm;codecs=vp9';
+          } else if (MediaRecorder.isTypeSupported('video/webm;codecs=vp8')) {
+            mimeType = 'video/webm;codecs=vp8';
+          } else if (MediaRecorder.isTypeSupported('video/mp4')) {
+            mimeType = 'video/mp4';
+          } else {
+            mimeType = '';
+          }
+        }
+      }
+
+      const recorderOptions = mimeType ? { mimeType } : undefined;
+      const recorder = new MediaRecorder(stream, recorderOptions);
+
+      recordedChunksRef.current = [];
+
+      recorder.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) {
+          recordedChunksRef.current.push(e.data);
+        }
+      };
+
+      recorder.onstop = () => {
+        const ext = mimeType.includes('mp4') ? 'mp4' : 'webm';
+        const finalMimeType = mimeType || 'video/webm';
+        const blob = new Blob(recordedChunksRef.current, { type: finalMimeType });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = `contribution-timelapse.${ext}`;
+        document.body.appendChild(a);
+        a.click();
+
+        setTimeout(() => {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }, 100);
+
+        setIsExporting(false);
+      };
+
+      recorder.start();
+      mediaRecorderRef.current = recorder;
+      setIsExporting(true);
+
+      // Reset playback and start
+      setPlaybackIndex(7);
+      setIsPlaying(true);
+    } catch (err) {
+      console.error('Export failed:', err);
+      alert('Failed to start export recording. Make sure your browser supports captureStream.');
+      setIsExporting(false);
+    }
+  }, []);
+
+  // Stop recording when playback reaches the end
+  useEffect(() => {
+    if (isExporting && !isPlaying && playbackIndex >= Math.min(days, data.length)) {
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+        mediaRecorderRef.current.stop();
+      }
+    }
+  }, [isPlaying, isExporting, playbackIndex, days, data.length]);
+
   // ── Build cube specs from ActivityData ─────────────────────────────────────
   const cubes = useCallback((): CubeSpec[] => {
     const recent = data.slice(-days);
     // When replaying, slice to current frame; zero out future cubes for clean build-up
-    const visibleCount = replayIndex !== null ? replayIndex : recent.length;
     const max = Math.max(...recent.map((d) => d.count), 1);
 
-    return recent.map((d, i) => ({
+    const visibleData = timeLapseMode ? recent.slice(0, playbackIndex) : recent;
+    const visibleCount = replayIndex !== null ? replayIndex : visibleData.length;
+
+    return visibleData.map((d, i) => ({
       col: Math.floor(i / 7),
       row: i % 7,
       height: i >= visibleCount ? 0.04 : d.count === 0 ? 0.04 : 0.1 + 0.9 * (d.count / max),
@@ -156,7 +253,7 @@ export default function ContributionCity3D({
       date: d.date,
       intensity: i >= visibleCount ? 0 : d.intensity,
     }));
-  }, [data, days, replayIndex]);
+  }, [data, days, timeLapseMode, playbackIndex, replayIndex]);
 
   // ── Draw ───────────────────────────────────────────────────────────────────
   const draw = useCallback(() => {
@@ -349,6 +446,40 @@ export default function ContributionCity3D({
     draw();
   }, [draw]);
 
+  // ── Time-Lapse Animation Loop ──────────────────────────────────────────────
+  useEffect(() => {
+    if (!timeLapseMode) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setPlaybackIndex(days);
+
+      setIsPlaying(false);
+      return;
+    }
+
+    if (!isPlaying) return;
+
+    const maxIndex = Math.min(days, data.length);
+    let frame: number;
+    let lastTime = performance.now();
+
+    const tick = (time: number) => {
+      if (time - lastTime > 60) {
+        setPlaybackIndex((prev) => {
+          if (prev >= maxIndex) {
+            setIsPlaying(false);
+            return maxIndex;
+          }
+          return Math.min(prev + 7, maxIndex);
+        });
+        lastTime = time;
+      }
+      frame = requestAnimationFrame(tick);
+    };
+
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [timeLapseMode, isPlaying, data.length, days]);
+
   // ── Pointer events – orbit drag ────────────────────────────────────────────
   const onPointerDown = (e: React.PointerEvent) => {
     (e.target as HTMLElement).setPointerCapture(e.pointerId);
@@ -435,6 +566,10 @@ export default function ContributionCity3D({
   const onTouchEnd = () => {
     lastPinchRef.current = null;
   };
+
+  if (!data || data.length === 0) {
+    return <EmptyState message="No activity found for this timeframe" />;
+  }
 
   return (
     <div className="relative w-full" style={{ background: palette.bg, borderRadius: 12 }}>
@@ -541,12 +676,93 @@ export default function ContributionCity3D({
       )}
 
       {/* Controls hint */}
-      <div
-        className="absolute bottom-3 right-4 text-xs opacity-40 select-none pointer-events-none"
-        style={{ color: palette.accent }}
-      >
-        Drag to rotate · Scroll to zoom
-      </div>
+      {!timeLapseMode && (
+        <div
+          className="absolute bottom-3 right-4 text-xs opacity-40 select-none pointer-events-none"
+          style={{ color: palette.accent }}
+        >
+          Drag to rotate · Scroll to zoom
+        </div>
+      )}
+
+      {/* Time-Lapse UI Overlay */}
+      {timeLapseMode && (
+        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
+          {/* Playback Controls */}
+          <div
+            className="flex items-center gap-2 px-3 py-2 rounded-xl backdrop-blur-md shadow-sm border border-white/10"
+            style={{ background: `${palette.bg}88` }}
+          >
+            <button
+              onClick={() => {
+                if (playbackIndex >= Math.min(days, data.length)) {
+                  setPlaybackIndex(7);
+                }
+                setIsPlaying(!isPlaying);
+              }}
+              disabled={isExporting}
+              className={`p-1.5 rounded-lg transition-colors text-white ${
+                isExporting ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white/10'
+              }`}
+              aria-label={isPlaying ? 'Pause' : 'Play'}
+            >
+              {isPlaying ? <Pause size={16} /> : <Play size={16} />}
+            </button>
+            <button
+              onClick={() => {
+                setPlaybackIndex(7);
+                setIsPlaying(true);
+              }}
+              disabled={isExporting}
+              className={`p-1.5 rounded-lg transition-colors text-white ${
+                isExporting ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white/10'
+              }`}
+              aria-label="Restart"
+            >
+              <RotateCcw size={16} />
+            </button>
+            <div className="w-px h-5 bg-white/20 mx-1" />
+            <div
+              className="text-xs font-semibold px-1 min-w-[80px]"
+              style={{ color: palette.accent }}
+            >
+              {playbackIndex > 0 &&
+                (() => {
+                  const recent = data.slice(-days);
+                  const currentData = recent[Math.min(playbackIndex - 1, recent.length - 1)];
+                  if (!currentData) return '...';
+                  const dateObj = new Date(currentData.date);
+                  return dateObj.toLocaleDateString(undefined, {
+                    month: 'short',
+                    year: 'numeric',
+                  });
+                })()}
+            </div>
+            {/* Export button */}
+            <div className="w-px h-5 bg-white/20 mx-1" />
+            <button
+              onClick={handleExport}
+              disabled={isExporting}
+              className={`flex items-center gap-1.5 px-2 py-1.5 rounded-lg transition-colors text-xs font-medium text-white ${
+                isExporting ? 'bg-white/20 cursor-wait' : 'hover:bg-white/10'
+              }`}
+              title="Export as WebM video"
+            >
+              {isExporting ? (
+                <>
+                  <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Recording...
+                </>
+              ) : (
+                <>
+                  <Download size={14} />
+                  Export
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

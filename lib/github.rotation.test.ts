@@ -6,6 +6,7 @@ import {
   getTokenStatsForTests,
   getGlobalCircuitBreakerOpenUntilForTests,
 } from './github';
+import { encryptGitHubToken } from './github-token-encryption';
 
 describe('GitHub Multi-Token Rotation & Fallback', () => {
   const originalGitHubPat = process.env.GITHUB_PAT;
@@ -168,5 +169,41 @@ describe('GitHub Multi-Token Rotation & Fallback', () => {
 
     expect(getGlobalCircuitBreakerOpenUntilForTests()).toBe(resetTime1);
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('decrypts encrypted tokens if ENCRYPTION_KEY is present', () => {
+    const originalKey = process.env.ENCRYPTION_KEY;
+    process.env.ENCRYPTION_KEY = 'abcdefghijklmnopqrstuvwxyz123456';
+
+    try {
+      const rawToken = 'ghp_myRealGitHubToken';
+      const encrypted = encryptGitHubToken(rawToken);
+
+      expect(encrypted.split('.')).toHaveLength(4);
+
+      process.env.GITHUB_PAT = `${encrypted}, ghp_anotherPlaintextToken`;
+      delete process.env.GITHUB_TOKEN;
+
+      const tokens = getGitHubTokens();
+      expect(tokens).toEqual([rawToken, 'ghp_anotherPlaintextToken']);
+    } finally {
+      process.env.ENCRYPTION_KEY = originalKey;
+    }
+  });
+
+  it('gracefully falls back to raw token on decryption failure', () => {
+    const originalKey = process.env.ENCRYPTION_KEY;
+    process.env.ENCRYPTION_KEY = 'abcdefghijklmnopqrstuvwxyz123456';
+
+    try {
+      const fakeEncryptedToken = '1234567890abcdef1234567890abcdef:abcdefabcdef';
+      process.env.GITHUB_PAT = fakeEncryptedToken;
+      delete process.env.GITHUB_TOKEN;
+
+      const tokens = getGitHubTokens();
+      expect(tokens).toEqual([fakeEncryptedToken]);
+    } finally {
+      process.env.ENCRYPTION_KEY = originalKey;
+    }
   });
 });

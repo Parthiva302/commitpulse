@@ -2,6 +2,25 @@ import '@testing-library/jest-dom';
 import { afterEach } from 'vitest';
 import { vi } from 'vitest';
 
+// Mock IntersectionObserver globally for Framer Motion tests
+class MockIntersectionObserver {
+  observe = vi.fn();
+  disconnect = vi.fn();
+  unobserve = vi.fn();
+}
+Object.defineProperty(globalThis, 'IntersectionObserver', {
+  writable: true,
+  configurable: true,
+  value: MockIntersectionObserver,
+});
+if (typeof window !== 'undefined') {
+  Object.defineProperty(window, 'IntersectionObserver', {
+    writable: true,
+    configurable: true,
+    value: MockIntersectionObserver,
+  });
+}
+
 // 1. Next-Auth ko crash hone se bachane ke liye env variables defaults set karo
 process.env.AUTH_SECRET = 'a-super-secret-32-character-dummy-string-for-tests';
 process.env.NEXTAUTH_SECRET = 'a-super-secret-32-character-dummy-string-for-tests';
@@ -105,6 +124,19 @@ if (typeof window !== 'undefined' && typeof window.Storage !== 'undefined') {
     writable: true,
     configurable: true,
   });
+
+  // Mock IntersectionObserver for Framer Motion / JSDOM compatibility
+  class MockIntersectionObserver {
+    disconnect = vi.fn();
+    observe = vi.fn();
+    takeRecords = vi.fn(() => []);
+    unobserve = vi.fn();
+  }
+  Object.defineProperty(globalThis, 'IntersectionObserver', {
+    writable: true,
+    configurable: true,
+    value: MockIntersectionObserver,
+  });
 }
 
 if (typeof globalThis.fetch !== 'undefined') {
@@ -142,3 +174,46 @@ if (typeof globalThis.fetch !== 'undefined') {
     globalThis.fetch = guardedFetch;
   });
 }
+
+import enTranslations from './locales/en.json';
+
+// Global Translation Context Mock
+vi.mock('@/context/TranslationContext', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/context/TranslationContext')>();
+
+  const getNestedValue = (obj: Record<string, unknown>, path: string): unknown => {
+    return path.split('.').reduce((acc: unknown, part) => {
+      if (acc && typeof acc === 'object') {
+        return (acc as Record<string, unknown>)[part];
+      }
+      return undefined;
+    }, obj);
+  };
+
+  return {
+    ...actual,
+    useTranslation: () => ({
+      t: (key: string, options?: Record<string, string | number> & { defaultValue?: string }) => {
+        let val = getNestedValue(enTranslations as Record<string, unknown>, key) as string;
+
+        if (!val) {
+          if (options && typeof options.defaultValue === 'string') {
+            val = options.defaultValue;
+          } else {
+            const parts = key.split('.');
+            val = parts[parts.length - 1];
+          }
+        }
+
+        if (options && typeof val === 'string') {
+          Object.keys(options).forEach((k) => {
+            if (k !== 'defaultValue') {
+              val = val.replace(`{{${k}}}`, String(options[k]));
+            }
+          });
+        }
+        return val;
+      },
+    }),
+  };
+});
