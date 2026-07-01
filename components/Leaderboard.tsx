@@ -28,7 +28,7 @@ export default function Leaderboard({ contributors = [] }: LeaderboardProps) {
   const rank3 = top3[2];
 
   return (
-    <div className="w-full mx-auto font-sans relative overflow-hidden bg-black/[0.02] dark:bg-white/[0.02] border border-black/10 dark:border-white/[0.08] backdrop-blur-xl px-4 py-8 sm:p-12 rounded-[2rem] text-black dark:text-white">
+    <div className="w-full mx-auto font-sans relative overflow-hidden bg-black/[0.02] dark:bg-white/[0.02] border border-black/10 dark:border-white/[0.08] backdrop-blur-xl p-8 sm:p-12 rounded-[2rem] text-black dark:text-white">
       {/* ── Ambient Background Glows ── */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-[2rem]">
         <div className="absolute top-[5%] left-1/2 -translate-x-1/2 h-[400px] w-[400px] rounded-full bg-[#eab308]/10 blur-[120px]" />
@@ -38,7 +38,7 @@ export default function Leaderboard({ contributors = [] }: LeaderboardProps) {
       </div>
 
       {/* ── Podium Section ── */}
-      <div className="flex items-end justify-center h-[280px] sm:h-[360px] mb-16 gap-2 sm:gap-6 relative mt-8">
+      <div className="flex items-end justify-center h-[300px] sm:h-[360px] mb-16 gap-2 sm:gap-6 relative mt-8">
         {/* Subtle grid bg */}
         <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.05)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:2rem_2rem] pointer-events-none [mask-image:radial-gradient(ellipse_at_center,#000_30%,transparent_70%)]" />
 
@@ -182,7 +182,18 @@ function PodiumItem({ contributor, rank, height, variant, delay, isFirst }: Podi
   const theme = styles[variant];
 
   return (
-    <div className="flex flex-col items-center relative z-10 w-24 sm:w-36 cursor-pointer group">
+    <div
+      className="flex flex-col items-center relative z-10 w-28 sm:w-36 cursor-pointer group"
+      onClick={() => window.open(contributor.html_url, '_blank', 'noopener,noreferrer')}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          window.open(contributor.html_url, '_blank', 'noopener,noreferrer');
+        }
+      }}
+    >
       <motion.div
         initial={{ opacity: 0, y: 60 }}
         whileInView={isFirst ? { opacity: 1, y: [0, -8, 0] } : { opacity: 1, y: 0 }}
