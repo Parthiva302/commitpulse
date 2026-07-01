@@ -7,9 +7,9 @@ import type { CIAnalyticsFilters } from '@/types/ci-analytics';
 interface CIFiltersProps {
   filters: CIAnalyticsFilters;
   onChange: (filters: CIAnalyticsFilters) => void;
-  repos: string[];
-  branches: string[];
-  workflows: string[];
+  repos?: string[];
+  branches?: string[];
+  workflows?: string[];
 }
 
 const TIME_RANGES = [
