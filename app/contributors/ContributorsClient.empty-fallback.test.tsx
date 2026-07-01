@@ -42,10 +42,13 @@ vi.mock('next/image', () => ({
   default: ({
     alt,
     src,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    fill,
     ...props
   }: React.ImgHTMLAttributes<HTMLImageElement> & {
     width?: number;
     height?: number;
+    fill?: boolean;
   }) => React.createElement('img', { alt, src, ...props }),
 }));
 

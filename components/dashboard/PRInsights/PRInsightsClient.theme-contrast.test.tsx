@@ -1,6 +1,9 @@
 import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { render, screen, within } from '@testing-library/react';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import userEvent from '@testing-library/user-event';
 import PRInsightsClient from './PRInsightsClient';
 import type { PRInsightData } from '@/services/github/pr-insights';
 

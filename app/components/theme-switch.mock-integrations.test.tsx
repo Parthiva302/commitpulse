@@ -116,6 +116,8 @@ describe('ThemeSwitch mock integrations', () => {
 
   it('writes cache sync and toggles theme when reduced motion is enabled', async () => {
     const localStorageMock = createLocalStorageMock({ theme: 'light' });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const toggleSpy = vi.fn();
 
     Object.defineProperty(window, 'localStorage', {
       configurable: true,

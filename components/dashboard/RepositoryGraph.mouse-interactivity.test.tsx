@@ -12,7 +12,8 @@ let capturedOnNodeHover: ((node: Record<string, unknown> | null) => void) | null
 let capturedOnNodeClick: ((node: Record<string, unknown>) => void) | null = null;
 
 vi.mock('next/dynamic', () => ({
-  default: () => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  default: (_fn: unknown, _opts?: unknown) => {
     return function ForceGraphMock(props: ForceGraphProps) {
       capturedOnNodeHover = props.onNodeHover ?? null;
       capturedOnNodeClick = props.onNodeClick ?? null;

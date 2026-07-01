@@ -34,17 +34,40 @@ interface MotionGProps extends React.SVGProps<SVGGElement> {
 vi.mock('framer-motion', () => {
   const motion = {
     div: React.forwardRef<HTMLDivElement, MotionDivProps>(
-      ({ children, className, style, ...rest }, ref) => (
+      (
+        {
+          children,
+          className,
+          style,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          initial,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          animate,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          whileInView,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          viewport,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          transition,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          whileHover,
+          ...rest
+        },
+        ref
+      ) => (
         <div ref={ref} className={className} style={style} {...rest}>
           {children}
         </div>
       )
     ),
-    g: React.forwardRef<SVGGElement, MotionGProps>(({ children, className, ...rest }, ref) => (
-      <g ref={ref} className={className} {...rest}>
-        {children}
-      </g>
-    )),
+    g: React.forwardRef<SVGGElement, MotionGProps>(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      ({ children, className, initial, animate, transition, ...rest }, ref) => (
+        <g ref={ref} className={className} {...rest}>
+          {children}
+        </g>
+      )
+    ),
   };
 
   motion.div.displayName = 'motion.div';

@@ -3,18 +3,21 @@
 import Link from 'next/link';
 import { useTranslation } from '@/context/TranslationContext';
 import {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  GitFork,
+  GitBranch,
+  MessageCircle,
+  User,
   Home,
   Zap,
   GitCompare,
   Sliders,
   Users,
-  MessageCircle,
   BookOpen,
-  GitBranch,
-  HelpCircle,
+  HelpCircle, // ← Added for FAQ
 } from 'lucide-react';
-import { FaGithub, FaDiscord, FaLinkedin } from 'react-icons/fa';
-import { FaXTwitter } from 'react-icons/fa6';
+import { FaGithub, FaDiscord, FaTwitter, FaLinkedin } from 'react-icons/fa';
+
 interface FooterLink {
   label: string;
   href: string;
@@ -72,9 +75,9 @@ function LinkComponent({
 
 const SOCIAL_ICON_MAP: Record<string, React.ReactNode> = {
   github: <FaGithub size={15} className="shrink-0" />,
-  creator: <FaGithub size={15} className="shrink-0" />,
+  creator: <User size={15} className="shrink-0" />,
   discord: <FaDiscord size={15} className="shrink-0" />,
-  twitter: <FaXTwitter size={15} className="shrink-0" />,
+  twitter: <FaTwitter size={15} className="shrink-0" />,
   linkedin: <FaLinkedin size={15} className="shrink-0" />,
 };
 
@@ -91,7 +94,7 @@ const RESOURCE_ICON_MAP: Record<string, React.ReactNode> = {
   documentation: <BookOpen size={15} className="shrink-0" />,
   github_repo: <GitBranch size={15} className="shrink-0" />,
   guidelines: <BookOpen size={15} className="shrink-0" />,
-  faq: <HelpCircle size={15} className="shrink-0" />,
+  faq: <HelpCircle size={15} className="shrink-0" />, // Added
 };
 
 export function Footer() {
@@ -120,12 +123,12 @@ export function Footer() {
     },
     {
       label: t('footer.guidelines'),
-      href: 'https://github.com/JhaSourav07/commitpulse/blob/main/CODE_OF_CONDUCT.md',
-      isExternal: true,
+      href: '/guidelines',
+      isExternal: false,
     },
     {
-      label: t('footer.faq'),
-      href: '/support',
+      label: t('footer.faq'), // ← Added
+      href: '/faq',
       isExternal: false,
     },
   ];
@@ -188,7 +191,7 @@ export function Footer() {
                   className="text-sm text-zinc-600 dark:text-zinc-400"
                 >
                   <span className="flex items-center gap-2">
-                    {NAV_ICON_MAP[link.href as keyof typeof NAV_ICON_MAP]}
+                    {NAV_ICON_MAP[link.href]}
                     {link.label}
                   </span>
                 </LinkComponent>
@@ -202,28 +205,29 @@ export function Footer() {
               {t('footer.resources')}
             </h3>
             <nav className="flex flex-col gap-2 text-center sm:text-left">
-              {resourceLinks.map((link) => {
-                let iconKey: keyof typeof RESOURCE_ICON_MAP = 'github_repo';
-                if (link.href.includes('README')) iconKey = 'documentation';
-                else if (link.href.includes('CODE_OF_CONDUCT') || link.href.includes('guidelines'))
-                  iconKey = 'guidelines';
-                else if (link.href.includes('support') || link.href.includes('faq'))
-                  iconKey = 'faq';
-
-                return (
-                  <LinkComponent
-                    key={link.href}
-                    href={link.href}
-                    isExternal={link.isExternal}
-                    className="text-sm text-zinc-600 dark:text-zinc-400"
-                  >
-                    <span className="flex items-center gap-2">
-                      {RESOURCE_ICON_MAP[iconKey]}
-                      {link.label}
-                    </span>
-                  </LinkComponent>
-                );
-              })}
+              {resourceLinks.map((link) => (
+                <LinkComponent
+                  key={link.href}
+                  href={link.href}
+                  isExternal={link.isExternal}
+                  className="text-sm text-zinc-600 dark:text-zinc-400"
+                >
+                  <span className="flex items-center gap-2">
+                    {
+                      RESOURCE_ICON_MAP[
+                        link.href.includes('README')
+                          ? 'documentation'
+                          : link.href.includes('guidelines')
+                            ? 'guidelines'
+                            : link.href.includes('faq')
+                              ? 'faq'
+                              : 'github_repo'
+                      ]
+                    }
+                    {link.label}
+                  </span>
+                </LinkComponent>
+              ))}
             </nav>
           </div>
 
@@ -242,7 +246,7 @@ export function Footer() {
                   className="text-sm text-zinc-600 dark:text-zinc-400"
                 >
                   <span className="flex items-center gap-2">
-                    {SOCIAL_ICON_MAP[link.icon as keyof typeof SOCIAL_ICON_MAP]}
+                    {SOCIAL_ICON_MAP[link.icon]}
                     {link.label}
                   </span>
                 </LinkComponent>

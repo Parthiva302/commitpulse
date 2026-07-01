@@ -5,8 +5,8 @@ import Leaderboard, { Contributor } from './Leaderboard';
 
 // Mock Next.js Image
 vi.mock('next/image', () => ({
-  default: ({ ...props }: React.ImgHTMLAttributes<HTMLImageElement> & { fill?: boolean }) => (
-    /* eslint-disable @next/next/no-img-element */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  default: ({ fill, ...props }: React.ImgHTMLAttributes<HTMLImageElement> & { fill?: boolean }) => (
     <img alt="mock" {...props} />
   ),
 }));
@@ -22,11 +22,29 @@ vi.mock('framer-motion', async () => {
         className,
         onClick,
         style,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        whileHover,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        whileInView,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        initial,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        viewport,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        transition,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        animate,
       }: {
         children?: React.ReactNode;
         className?: string;
         onClick?: React.MouseEventHandler<HTMLDivElement>;
         style?: React.CSSProperties;
+        whileHover?: unknown;
+        whileInView?: unknown;
+        initial?: unknown;
+        viewport?: unknown;
+        transition?: unknown;
+        animate?: unknown;
       }) => (
         <div className={className} onClick={onClick} style={style} data-testid="motion-div">
           {children}
@@ -74,7 +92,7 @@ describe('Leaderboard - Responsive Breakpoints & Mobile Layouts (Issue #2759 Equ
     const mainWrapper = container.firstChild as HTMLElement;
 
     // Verify presence of fluid responsive padding classes rather than fixed widths
-    expect(mainWrapper.className).toContain('py-8');
+    expect(mainWrapper.className).toContain('p-8');
     expect(mainWrapper.className).toContain('sm:p-12');
     expect(mainWrapper.className).toContain('w-full'); // Ensures it never forces a horizontal scrollbar
   });
@@ -83,11 +101,11 @@ describe('Leaderboard - Responsive Breakpoints & Mobile Layouts (Issue #2759 Equ
     const { container } = render(<Leaderboard contributors={mockData} />);
 
     // Podium wrapper responsiveness
-    const podiumWrapper = container.querySelector('.h-\\[280px\\].sm\\:h-\\[360px\\]');
+    const podiumWrapper = container.querySelector('.h-\\[300px\\].sm\\:h-\\[360px\\]');
     expect(podiumWrapper).toBeTruthy();
 
     // Individual podium item responsiveness
-    const podiumItems = container.querySelectorAll('.w-24.sm\\:w-36');
+    const podiumItems = container.querySelectorAll('.w-28.sm\\:w-36');
     expect(podiumItems.length).toBe(3); // Top 3 podium items
   });
 

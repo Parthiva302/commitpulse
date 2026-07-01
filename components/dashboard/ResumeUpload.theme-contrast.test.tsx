@@ -143,7 +143,8 @@ describe('ResumeUpload Theme Contrast', () => {
   it('keeps the drag‑active overlay translucent so foreground content remains visible', () => {
     mockThemeEnvironment('dark');
 
-    render(<ResumeUpload {...sharedProps} />);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { container } = render(<ResumeUpload {...sharedProps} />);
     const dropzone = screen.getByRole('button', { name: /drop your resume here/i });
 
     // Simulate drag‑enter to activate the overlay

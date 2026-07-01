@@ -133,7 +133,8 @@ export default function CIWorkflowTable({ runs }: { runs: CIWorkflowRun[] }) {
             </tr>
           </thead>
           <tbody>
-            {runs.slice(0, 20).map((run) => {
+            {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */}
+            {runs.slice(0, 20).map((run, idx) => {
               const badge = getStatusBadge(run);
               return (
                 <tr

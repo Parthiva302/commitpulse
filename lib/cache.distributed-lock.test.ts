@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { DistributedCache } from './cache';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { DistributedCache, LockConfig } from './cache';
 
 describe('DistributedCache distributed lock improvements', () => {
   const originalEnv = { ...process.env };

@@ -44,6 +44,7 @@ vi.mock('framer-motion', () => ({
  * This mirrors the shape produced by generatePetals() in CherryBlossom.tsx
  * so assertions can reference exact field semantics.
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function buildExtremePetal(id: number): Petal {
   return {
     id,

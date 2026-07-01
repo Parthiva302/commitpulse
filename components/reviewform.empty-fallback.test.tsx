@@ -15,9 +15,11 @@ type MotionProps<T extends keyof React.JSX.IntrinsicElements> =
 
 vi.mock('framer-motion', () => ({
   motion: {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     div: ({ children, initial, animate, transition, ...props }: MotionProps<'div'>) => (
       <div {...props}>{children}</div>
     ),
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     button: ({ children, whileHover, whileTap, transition, ...props }: MotionProps<'button'>) => (
       <button {...props}>{children}</button>
     ),

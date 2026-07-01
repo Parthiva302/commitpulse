@@ -9,6 +9,22 @@ vi.mock('framer-motion', () => ({
     div: ({
       children,
       // Strip framer-motion-specific props so they don't reach the real DOM.
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      initial: _i,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      animate: _a,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      exit: _e,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      transition: _t,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      whileInView: _wiv,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      whileHover: _wh,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      whileTap: _wt,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      viewport: _vp,
       ...rest
     }: ComponentProps<'div'> & { [key: string]: unknown }) => (
       <div {...(rest as ComponentProps<'div'>)}>{children}</div>

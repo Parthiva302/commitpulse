@@ -11,12 +11,19 @@ vi.mock('framer-motion', () => ({
       get: (_, tag) => {
         return ({
           children,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           animate,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           initial,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           exit,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           transition,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           whileHover,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           whileTap,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           whileFocus,
           ...props
         }: {

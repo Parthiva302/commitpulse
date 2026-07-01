@@ -34,6 +34,7 @@ describe('fetchCIAnalytics token forwarding', () => {
   });
 
   it('forwards the per-user token to fetchWithRetry as its 5th argument', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     vi.mocked(fetchWithRetry).mockImplementation(async (_url, _opts) => {
       return {
         ok: true,

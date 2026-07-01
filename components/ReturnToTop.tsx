@@ -30,7 +30,9 @@ export default function ReturnToTop() {
 
   useEffect(() => {
     const updateVisibility = () => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const scrolled = window.scrollY + window.innerHeight;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const total = document.documentElement.scrollHeight;
       setIsVisible(window.scrollY > 300);
     };

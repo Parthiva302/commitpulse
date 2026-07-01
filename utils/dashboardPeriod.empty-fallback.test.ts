@@ -1,6 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, expect, it } from 'vitest';
-import { resolveDashboardPeriod, dashboardPeriodToSearchParams } from './dashboardPeriod';
+import {
+  resolveDashboardPeriod,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  shiftDashboardPeriod,
+  dashboardPeriodToSearchParams,
+} from './dashboardPeriod';
 
 describe('dashboardPeriod - Edge Cases & Empty/Missing Inputs Verification', () => {
   it('1. resolves to rolling fallback when input is an empty object', () => {

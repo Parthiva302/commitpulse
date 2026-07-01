@@ -1,5 +1,6 @@
 'use client';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import Image from 'next/image';
 import { useState, useEffect, lazy, Suspense } from 'react';
 import { Loader2, Search, X, ExternalLink, PlaySquare } from 'lucide-react';

@@ -101,7 +101,8 @@ describe('OG API Route - Massive Data Sets and High Bounds Scaling', () => {
         // Asserts that the buffer is not empty or malformed due to layout overflow
         expect(arrayBuffer.byteLength).toBeGreaterThan(0);
       }
-    } catch {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (e: unknown) {
       // Ignored to strictly evaluate the bounding logic abstractions below
     }
 
@@ -119,7 +120,8 @@ describe('OG API Route - Massive Data Sets and High Bounds Scaling', () => {
 
     try {
       await GET(req);
-    } catch {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (e: unknown) {
       // Graceful isolation boundary
     }
 

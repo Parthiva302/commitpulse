@@ -2,6 +2,7 @@
 
 'use client';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import Image from 'next/image';
 import { motion, Variants } from 'framer-motion';
 import { Code, Flame, Calendar, Coffee, Trophy, Sparkles } from 'lucide-react';

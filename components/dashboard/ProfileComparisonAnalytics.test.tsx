@@ -19,6 +19,7 @@ vi.mock('@/context/TranslationContext', () => ({
 vi.mock('framer-motion', () => ({
   motion: {
     div: ({ children, className, style, ...props }: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { initial, animate, whileInView, viewport, transition, ...rest } = props;
       return (
         <div className={className} style={style} {...rest}>
@@ -340,6 +341,7 @@ describe('ProfileComparisonAnalytics', () => {
   });
 
   it('supports keyboard accessibility controls and ARIA compliance', () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { container } = render(
       <ProfileComparisonAnalytics user1={mockUser1} user2={mockUser2} />
     );

@@ -20,8 +20,37 @@ vi.mock('framer-motion', () => ({
     {},
     {
       get: (_, tag) => {
-        return ({ children, ...props }: { children?: ReactNode; [key: string]: unknown }) =>
-          React.createElement(tag as string, props, children);
+        return ({
+          children,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          animate: _animate,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          initial: _initial,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          exit: _exit,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          transition: _transition,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          variants: _variants,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          whileHover: _whileHover,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          whileTap: _whileTap,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          whileFocus: _whileFocus,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          whileDrag: _whileDrag,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          whileInView: _whileInView,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          layout: _layout,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          layoutId: _layoutId,
+          ...props
+        }: {
+          children?: ReactNode;
+          [key: string]: unknown;
+        }) => React.createElement(tag as string, props, children);
       },
     }
   ),

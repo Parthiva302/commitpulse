@@ -126,7 +126,8 @@ describe('Stats API Route - Massive Data Sets and High Bounds Scaling', () => {
           svgText = text;
         }
       }
-    } catch {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (e: unknown) {
       // Ignored to strictly evaluate the bounding logic assertions below
     }
 
@@ -146,7 +147,8 @@ describe('Stats API Route - Massive Data Sets and High Bounds Scaling', () => {
 
     try {
       await GET(req);
-    } catch {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (e: unknown) {
       // Graceful isolation boundary
     }
 

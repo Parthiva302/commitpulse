@@ -13,6 +13,16 @@ vi.mock('framer-motion', () => ({
       children,
       className,
       style,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      animate,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      initial,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      whileInView,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      viewport,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      transition,
       ...rest
     }: ComponentProps<'div'> & { [key: string]: unknown }) => (
       <div className={className} style={style} {...rest}>

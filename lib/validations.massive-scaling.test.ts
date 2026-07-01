@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import {
   streakParamsSchema,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  githubParamsSchema,
   compareParamsSchema,
   reviewPostSchema,
   toGraceValue,

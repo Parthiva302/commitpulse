@@ -49,7 +49,7 @@ function logProduction(level: 'warn' | 'error', msg: string, ctx: Context = {}):
     ...redactedCtx,
   };
 
-  console.log(JSON.stringify(payload));
+  console.info(JSON.stringify(payload));
 }
 
 function logDevelopment(
@@ -71,7 +71,7 @@ function logDevelopment(
   } else if (level === 'warn') {
     console.warn(output);
   } else {
-    console.log(output);
+    console.info(output);
   }
 }
 

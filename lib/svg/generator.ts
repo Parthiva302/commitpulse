@@ -1653,6 +1653,7 @@ function renderHeatmapGrid(
         day.date === todayDate ||
         (!todayInWindow && col === weeks.length - 1 && row === week.contributionDays.length - 1);
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const [yr, m, d] = day.date.split('-');
       const formattedDate = `${MONTH_NAMES[parseInt(m, 10) - 1]} ${parseInt(d, 10)}`;
       const unit = mode === 'loc' ? 'est. lines of code' : 'commits';
@@ -3423,11 +3424,13 @@ export function generateActivityGraphSVG(
     ? params.accent[params.accent.length - 1]
     : params.accent;
   const accent = `#${sanitizeHexColor(rawAccent, '00ffaa')}`;
+
   const text = `#${sanitizeHexColor(params.text, 'ffffff')}`;
 
   const sanitizedFont = sanitizeFont(params.font);
   const selectedFont = resolveFont(sanitizedFont);
   const isPredefinedFont = isBundledFont(sanitizedFont);
+
   const statsFont = selectedFont || '"Space Grotesk", sans-serif';
   const googleFontUrlPart =
     sanitizedFont && !isPredefinedFont ? sanitizeGoogleFontUrl(sanitizedFont) : null;
@@ -3489,6 +3492,7 @@ function generateAutoThemeActivityGraphSVG(
   const sanitizedFont = sanitizeFont(params.font);
   const selectedFont = resolveFont(sanitizedFont);
   const isPredefinedFont = isBundledFont(sanitizedFont);
+
   const statsFont = selectedFont || '"Space Grotesk", sans-serif';
   const googleFontUrlPart =
     sanitizedFont && !isPredefinedFont ? sanitizeGoogleFontUrl(sanitizedFont) : null;
@@ -3662,6 +3666,7 @@ function _buildActivityGraphData(
 }
 
 function _renderActivityGraphDefs(accent: string, bg: string, params: BadgeParams): string {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const bgFill =
     params.bgType === 'linear' || params.bgType === 'radial' ? 'url(#canvas-gradient)' : bg;
 

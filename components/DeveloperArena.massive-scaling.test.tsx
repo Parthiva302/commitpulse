@@ -8,6 +8,7 @@ import React from 'react';
 // Mock Next.js Image component (same approach as DeveloperArena.test.tsx)
 vi.mock('next/image', () => ({
   __esModule: true,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   default: ({ fill, priority, ...props }: any) => {
     // eslint-disable-next-line @next/next/no-img-element
     return <img {...props} />;
@@ -33,6 +34,7 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const GAME_CHALLENGE_COUNT = 7; // matches GAME_CHALLENGES.length in DeveloperArena.tsx
 const PREDICTION_COUNT = 4; // matches PREDICTIONS.length in DeveloperArena.tsx
 

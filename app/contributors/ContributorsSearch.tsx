@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import Link from 'next/link';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import Image from 'next/image';
 import { GitFork, Search, X } from 'lucide-react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';

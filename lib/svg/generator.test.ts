@@ -7,6 +7,8 @@ import {
   generateRateLimitSVG,
   generateHeatmapSVG,
   generatePulseSVG,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  resolveFont,
   generateVersusSVG,
   particleCount,
   getSizeScale,

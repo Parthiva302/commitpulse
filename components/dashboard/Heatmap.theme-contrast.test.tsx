@@ -76,7 +76,8 @@ describe('Heatmap Theme Contrast', () => {
   });
 
   it('applies theme-aware empty-state styling', () => {
-    render(<Heatmap data={[]} />);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { container } = render(<Heatmap data={[]} />);
 
     expect(screen.getByText(/no recent activity to display/i)).toBeInTheDocument();
 

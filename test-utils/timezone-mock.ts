@@ -4,6 +4,7 @@
 // Ensures that timezone-sensitive tests produce consistent results
 // regardless of the system timezone (e.g., UTC on CI vs local dev timezone).
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { vi } from 'vitest';
 
 /**

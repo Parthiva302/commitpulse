@@ -9,6 +9,7 @@ vi.mock('framer-motion', () => ({
     div: ({
       children,
       className,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       whileHover: _whileHover,
       ...props
     }: React.HTMLAttributes<HTMLDivElement> & { whileHover?: unknown }) => (

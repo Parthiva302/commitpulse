@@ -1,5 +1,13 @@
 import { SVG_WIDTH, SVG_HEIGHT, CONTRIBUTION_MILESTONES, STREAK_MILESTONES } from './constants';
-import { GHOST_HEIGHT_PX, LOG_SCALE_MULTIPLIER, LINEAR_SCALE_MULTIPLIER } from './layoutConstants';
+import {
+  GHOST_HEIGHT_PX,
+  LOG_SCALE_MULTIPLIER,
+  LINEAR_SCALE_MULTIPLIER,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  MAX_LOG_HEIGHT,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  MAX_LINEAR_HEIGHT,
+} from './layoutConstants';
 import { FONT_MAP } from './fonts';
 
 import { describe, it, expect } from 'vitest';

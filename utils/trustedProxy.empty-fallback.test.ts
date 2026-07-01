@@ -1,4 +1,5 @@
-import { describe, expect, it, beforeEach } from 'vitest';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { describe, expect, it, vi, beforeEach } from 'vitest';
 import {
   isIPv4,
   ip4ToInt,

@@ -2,7 +2,8 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Zap, Clock, BarChart3, XCircle, ShieldCheck } from 'lucide-react';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { Zap, Clock, BarChart3, XCircle, ShieldCheck, TrendingUp } from 'lucide-react';
 import type { CIInsights } from '@/types/ci-analytics';
 
 interface InsightCardProps {

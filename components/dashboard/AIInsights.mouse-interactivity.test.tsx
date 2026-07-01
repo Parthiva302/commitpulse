@@ -98,9 +98,13 @@ describe('AIInsights — mouse interactivity', () => {
   });
 
   it('applies group-hover color transitions to icon and text elements on card hover', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const user = userEvent.setup();
     render(<AIInsights insights={baseInsights} />);
 
     const card = findInsightCard(baseInsights[0].text);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const iconElement = card.querySelector('svg');
     const textElement = card.querySelector('p');
 
     // Card must have group-hover mechanism
@@ -197,6 +201,8 @@ describe('AIInsights — mouse interactivity', () => {
   });
 
   it('supports independent hover states on multiple insight cards without interference', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const user = userEvent.setup();
     render(<AIInsights insights={extendedInsights} />);
 
     const firstCard = findInsightCard(extendedInsights[0].text);

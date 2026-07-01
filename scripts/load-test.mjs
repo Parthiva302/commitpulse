@@ -29,7 +29,8 @@ async function worker() {
         errors++;
       }
       totalRequests++;
-    } catch {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (e) {
       errors++;
       totalRequests++;
     }

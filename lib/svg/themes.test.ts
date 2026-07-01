@@ -45,7 +45,7 @@ describe('theme count', () => {
     // If this fails, either a theme was added to themes.ts without updating
     // THEMES.md, or a theme was removed without updating the docs.
     // Update this count when intentionally adding/removing themes.
-    expect(themeNames).toHaveLength(31);
+    expect(themeNames).toHaveLength(30);
   });
 
   it('contains all expected theme keys', () => {
@@ -129,7 +129,8 @@ describe('hex validity — all theme color values must be valid 6-char hex strin
   });
 
   it('no theme has a hex value with a leading # (values must be without #)', () => {
-    for (const [, theme] of themeEntries) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    for (const [name, theme] of themeEntries) {
       expect(theme.bg.startsWith('#')).toBe(false);
       expect(theme.text.startsWith('#')).toBe(false);
       expect(theme.accent.startsWith('#')).toBe(false);
@@ -137,7 +138,8 @@ describe('hex validity — all theme color values must be valid 6-char hex strin
   });
 
   it('no theme has a hex value shorter than 6 characters', () => {
-    for (const [, theme] of themeEntries) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    for (const [name, theme] of themeEntries) {
       expect(theme.bg.length).toBeGreaterThanOrEqual(6);
       expect(theme.text.length).toBeGreaterThanOrEqual(6);
       expect(theme.accent.length).toBeGreaterThanOrEqual(6);

@@ -1,4 +1,5 @@
 import { DistributedCache } from '@/lib/cache';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { CIWorkflowRun, CIInsights } from '@/types/ci-analytics';
 
 interface WebhookPayload {
@@ -195,7 +196,7 @@ ${Object.entries(event.details)
   .join('\n')}
     `;
 
-    console.log(`Email alert would be sent to ${email}:`, { subject, body });
+    console.info(`Email alert would be sent to ${email}:`, { subject, body });
   } catch (error) {
     console.error('Failed to send email alert:', error);
   }

@@ -5,8 +5,8 @@ import Leaderboard, { Contributor } from './Leaderboard';
 
 // Mock Next.js Image
 vi.mock('next/image', () => ({
-  default: ({ ...props }: React.ImgHTMLAttributes<HTMLImageElement>) => (
-    /* eslint-disable @next/next/no-img-element */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  default: ({ fill, ...props }: React.ImgHTMLAttributes<HTMLImageElement> & { fill?: boolean }) => (
     <img alt="mock" {...props} />
   ),
 }));
@@ -22,11 +22,29 @@ vi.mock('framer-motion', async () => {
         className,
         onClick,
         style,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        whileHover,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        whileInView,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        initial,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        viewport,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        transition,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        animate,
       }: {
         children?: React.ReactNode;
         className?: string;
         onClick?: React.MouseEventHandler<HTMLDivElement>;
         style?: React.CSSProperties;
+        whileHover?: unknown;
+        whileInView?: unknown;
+        initial?: unknown;
+        viewport?: unknown;
+        transition?: unknown;
+        animate?: unknown;
       }) => (
         <div className={className} onClick={onClick} style={style} data-testid="motion-div">
           {children}
@@ -52,7 +70,7 @@ describe('Leaderboard - Mouse Interactivity & Touch Events (Issue #2757 Equivale
     const { container } = render(<Leaderboard contributors={mockData} />);
 
     // Check podiums
-    const podiums = container.querySelectorAll('.w-24.sm\\:w-36.cursor-pointer');
+    const podiums = container.querySelectorAll('.w-28.sm\\:w-36.cursor-pointer');
     expect(podiums.length).toBeGreaterThan(0);
 
     // Check list entries

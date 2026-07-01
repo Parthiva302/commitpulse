@@ -1,4 +1,5 @@
-import { describe, it, expect } from 'vitest';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { describe, it, expect, beforeEach } from 'vitest';
 import { render } from '@testing-library/react';
 import Loading from './loading';
 import '@testing-library/jest-dom';

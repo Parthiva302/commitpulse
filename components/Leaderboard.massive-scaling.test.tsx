@@ -5,8 +5,8 @@ import Leaderboard, { Contributor } from './Leaderboard';
 
 // Mock Next.js Image
 vi.mock('next/image', () => ({
-  default: ({ ...props }: React.ImgHTMLAttributes<HTMLImageElement>) => (
-    /* eslint-disable @next/next/no-img-element */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  default: ({ fill, ...props }: React.ImgHTMLAttributes<HTMLImageElement> & { fill?: boolean }) => (
     <img alt="mock" {...props} />
   ),
 }));

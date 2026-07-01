@@ -6,7 +6,8 @@ import { TECHNOLOGIES, TECH_CATEGORIES } from '../../data/technologies';
 import { SectionCard, FieldLabel } from '../SectionCard';
 import type { Technology } from '../../types';
 import { getRecommendations } from '@/lib/graph/recommendationEngine';
-import Image from 'next/image';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { TechnologyGraph } from './TechnologyGraph';
 
 interface TechnologiesSectionProps {
   selected: string[];
@@ -17,19 +18,23 @@ function TechIcon({ tech, isDark }: { tech: Technology; isDark: boolean }) {
   const filterClass = tech.type === 'simpleicon' && isDark ? 'invert brightness-200' : '';
 
   return (
-    <Image
+    <img
       src={tech.iconUrl}
       alt={tech.name}
       title={tech.name}
       width={24}
       height={24}
+      loading="lazy"
       className={`w-6 h-6 object-contain flex-shrink-0 ${filterClass}`}
+      onError={(e) => {
+        (e.currentTarget as HTMLImageElement).style.display = 'none';
+      }}
     />
   );
 }
 
 export function TechnologiesSection({ selected = [], onChange }: TechnologiesSectionProps) {
-  const safeSelected = useMemo(() => (Array.isArray(selected) ? selected : []), [selected]);
+  const safeSelected = Array.isArray(selected) ? selected : [];
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState<string>('All');
   const [recCategory, setRecCategory] = useState<string>('All');
@@ -148,14 +153,15 @@ export function TechnologiesSection({ selected = [], onChange }: TechnologiesSec
                     key={id}
                     className="inline-flex items-center gap-1.5 pl-2 pr-1 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-[11px] text-emerald-700 dark:text-emerald-300"
                   >
-                    <Image
+                    <img
                       src={tech.iconUrl}
                       alt=""
                       width={14}
                       height={14}
-                      className={`w-3.5 h-3.5 object-contain ${
-                        tech.type === 'simpleicon' && isDark ? 'invert brightness-200' : ''
-                      }`}
+                      className={`w-3.5 h-3.5 object-contain ${tech.type === 'simpleicon' && isDark ? 'invert brightness-200' : ''}`}
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).style.display = 'none';
+                      }}
                     />
                     <span>{tech.name}</span>
                     <button
@@ -233,16 +239,15 @@ export function TechnologiesSection({ selected = [], onChange }: TechnologiesSec
                             className="flex items-center gap-2.5 flex-1 text-left"
                           >
                             <div className="p-1 rounded-lg bg-gray-100 dark:bg-white/5 group-hover:scale-110 transition-transform duration-200">
-                              <Image
+                              <img
                                 src={tech.iconUrl}
                                 alt={tech.name}
                                 width={20}
                                 height={20}
-                                className={`w-5 h-5 object-contain ${
-                                  tech.type === 'simpleicon' && isDark
-                                    ? 'invert brightness-200'
-                                    : ''
-                                }`}
+                                className={`w-5 h-5 object-contain ${tech.type === 'simpleicon' && isDark ? 'invert brightness-200' : ''}`}
+                                onError={(e) => {
+                                  (e.currentTarget as HTMLImageElement).style.display = 'none';
+                                }}
                               />
                             </div>
                             <div className="flex flex-col">
